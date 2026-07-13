@@ -159,7 +159,10 @@ local function generate_luarc()
 
   local luarc = vim.json.encode {
     ["$schema"] = "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
-    ["runtime.version"] = "LuaJIT",
+    runtime = {
+      version = "LuaJIT",
+      pathStrict = true,
+    },
     ["workspace.library"] = {
       vim.fs.joinpath(vim.env.VIMRUNTIME, "lua/vim"),
       "${workspaceFolder}/src/lua",
