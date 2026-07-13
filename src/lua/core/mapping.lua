@@ -29,10 +29,15 @@ vim.keymap.set('n', '<C-k>', '<C-w>k', desc 'Window Up')
 vim.keymap.set('n', '<C-l>', '<C-w>l', desc 'Window Right')
 
 -- Buffer Navigation
-vim.keymap.set('n', '<C-Tab>', vim.cmd.bn, desc 'Buffer Previous')
+vim.keymap.set('n', '<C-Tab>', vim.cmd.bn, desc 'Buffer Next')
 vim.keymap.set('n', '<S-Tab>', vim.cmd.bp, desc 'Buffer Previous')
--- vim.keymap.set('n', '<M-q>', require 'utils.buffer_delete', desc 'Buffer Delete')
--- vim.keymap.set('n', '<leader>x', require 'utils.buffer_delete', desc 'Buffer Delete')
+vim.keymap.set('n', '\\x', function()
+  local buf = vim.api.nvim_get_current_buf()
+  if vim.api.nvim_get_option_value("buftype", {}) == "" then
+    vim.api.nvim_cmd({ cmd = "bprevious" }, {})
+  end
+  vim.api.nvim_buf_delete(buf, {})
+end, desc 'Buffer Delete')
 
 -- Tab Navigation
 vim.keymap.set('n', '<M-Tab>', vim.cmd.tabnext, desc 'Tab Next')
@@ -45,27 +50,24 @@ vim.keymap.set('n', '<C-Down>', '<cmd>resize -1<CR>', desc 'Resize Down')
 vim.keymap.set('n', '<C-Left>', '<cmd>vertical resize +1<CR>', desc 'Resize Left')
 vim.keymap.set('n', '<C-Right>', '<cmd>vertical resize -1<CR>', desc 'Resize Right')
 
+-- Search
+vim.keymap.set('n', '', function() vim.o.hlsearch = false end, desc 'Disable Highlight Search')
 vim.keymap.set({ "n", "x", "o" }, "n", function()
   vim.o.hlsearch = true
   if vim.v.searchforward == 1 then return 'n' else return 'N' end
 end, { expr = true, desc = "Search Next" })
-
 vim.keymap.set({ "n", "x", "o" }, "N", function()
   vim.o.hlsearch = true
   if vim.v.searchforward == 1 then return 'N' else return 'n' end
 end, { expr = true, desc = "Search Prev" })
-
 vim.keymap.set({ "n", "x" }, "#", function()
   vim.o.hlsearch = true
   return "#"
 end, { expr = true, desc = "Search Forward" })
-
 vim.keymap.set({ "n", "x" }, "*", function()
   vim.o.hlsearch = true
   return "*"
 end, { expr = true, desc = "Search Backward" })
-
--- vim.keymap.set('n', '', require 'utils.exit_hlsearch')
 
 vim.keymap.set('v', 'p', 'P', desc 'Paste') -- paste without yank
 vim.keymap.set('v', '<', '<gv', desc 'Indent Left')
@@ -74,19 +76,19 @@ vim.keymap.set('v', '>', '>gv', desc 'Indent Right')
 vim.keymap.set('n', 'q:', '<Nop>', { noremap = true })
 vim.keymap.set('n', 'q;', 'q:', { noremap = true })
 
-vim.keymap.set('n', '<C-LeftMouse>', function()
-  vim.cmd [[exe "silent normal! \<LeftMouse>"]]
-
-  -- gx
-  local uri = vim.fn.expand "<cfile>"
-  if uri:match 'https?://' then
-    vim.ui.open(uri)
-    return
-  end
-
-  local _, err = pcall(vim.api.nvim_command, [[silent normal! ]])
-  if err then vim.notify_once(err:match ': (.*)', vim.log.levels.WARN) end
-end, desc 'Open URI or Jump')
+-- vim.keymap.set('n', '<C-LeftMouse>', function()
+--   vim.cmd [[exe "silent normal! \<LeftMouse>"]]
+--
+--   -- gx
+--   local uri = vim.fn.expand "<cfile>"
+--   if uri:match 'https?://' then
+--     vim.ui.open(uri)
+--     return
+--   end
+--
+--   local _, err = pcall(vim.api.nvim_command, [[silent normal! ]])
+--   if err then vim.notify_once(err:match ': (.*)', vim.log.levels.WARN) end
+-- end, desc 'Open URI or Jump')
 
 vim.keymap.set('x', '/', function()
   return require 'vim._comment'.operator() .. 'gvj'
@@ -101,3 +103,32 @@ end, {
   desc = 'toggle comment'
 })
 vim.keymap.set('n', 'gco', 'oVcx<cmd>normal gcc<cr>fxa<bs>', desc 'Add Comment Bellow')
+
+vim.keymap.set('n', '<CR>', 'viw')
+
+-- Incremental Selection
+vim.keymap.set({ 'n', 'x', 'o' }, '<CR>', function()
+  if vim.treesitter.get_parser(nil, nil, { error = false }) then
+    require 'vim.treesitter._select'.select_parent(vim.v.count1)
+    return
+  end
+  local client = vim.lsp.get_clients({ method = 'textDocument/selectionRange', bufnr = 0 })[1]
+  if client then
+    vim.lsp.buf.selection_range(vim.v.count1)
+    return
+  end
+  vim.cmd "normal! viw"
+end, { desc = 'Select parent (outer) node' })
+
+vim.keymap.set({ 'x', 'o' }, '<BS>', function()
+  if vim.treesitter.get_parser(nil, nil, { error = false }) then
+    require 'vim.treesitter._select'.select_child(vim.v.count1)
+    return
+  end
+  local client = vim.lsp.get_clients({ method = 'textDocument/selectionRange', bufnr = 0 })[1]
+  if client then
+    vim.lsp.buf.selection_range(-vim.v.count1)
+    return
+  end
+  vim.cmd "normal! \b"
+end, { desc = 'Select child (inner) node' })

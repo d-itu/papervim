@@ -1,6 +1,6 @@
 vim.o.clipboard = "unnamedplus"
 
-vim.o.mouse = "a"
+vim.o.mouse = "ar"
 vim.o.mousemoveevent = true
 
 vim.o.expandtab = true
@@ -9,7 +9,6 @@ vim.o.softtabstop = 2
 
 vim.o.number = true
 vim.o.relativenumber = true
--- vim.o.signcolumn = 'no'
 vim.o.numberwidth = 1
 
 vim.o.wrap = false
@@ -19,6 +18,7 @@ vim.o.showmode = false
 vim.opt.mousescroll = { 'ver:1', 'hor:2' }
 
 vim.o.laststatus = 3 -- always and only last window
+vim.o.showtabline = 2
 vim.o.cmdheight = 0
 vim.o.list = true
 vim.opt.listchars = {
@@ -32,6 +32,8 @@ vim.opt.fillchars:append {
   foldopen = '',
   foldclose = '',
   foldsep = ' ',
+  foldinner = ' ',
+  fold = ' ',
   vert = ' ',
 }
 vim.opt.guicursor = {
@@ -56,5 +58,33 @@ vim.opt.whichwrap:append "<,>,[,],h,l"
 vim.o.undofile = true
 vim.o.swapfile = false
 
+vim.o.spell = true
 vim.o.spelloptions = "noplainbuffer,camel"
 
+vim.o.updatetime = 1
+
+vim.o.foldlevelstart = 99
+vim.o.foldtext = "v:lua.foldtext()"
+vim.o.foldcolumn = "auto"
+
+local function get_hl(row, col)
+  local inspect = vim.inspect_pos(0, row, col)
+  return vim.iter {
+    inspect.extmarks,
+    inspect.semantic_tokens,
+    inspect.treesitter,
+    inspect.syntax,
+  }:flatten(1):map(function(x) return x.hl_group end):totable()
+end
+
+function _G.foldtext()
+  local text = vim.api.nvim_buf_get_lines(0, vim.v.foldstart - 1, vim.v.foldstart, false)[1]
+  local chunks = {}
+  for i = 1, #text do
+    chunks[i] = { text:sub(i, i), get_hl(vim.v.foldstart - 1, i - 1) }
+  end
+  table.insert(chunks, {
+    " ⋯ ", { "@comment", "Visual" }
+  })
+  return chunks
+end
