@@ -1,4 +1,17 @@
 vim.cmd.packadd "nvim-surround"
 
-vim.keymap.set("x", "s", "<Plug>(nvim-surround-visual)")
+require "nvim-surround".setup {
+  ["("] = {
+    add = { "( ", " )" },
+  },
+  ["["] = {
+    add = { "[ ", " ]" },
+  },
+  ["<"] = {
+    add = { "< ", " >" },
+  },
+}
 
+vim.keymap.set("x", "s", "<Plug>(nvim-surround-visual)", {
+  desc = "Add a surrounding pair around a visual selection"
+})
