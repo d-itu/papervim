@@ -1,4 +1,3 @@
--- ---@diagnostic disable: missing-fields
 ---@type (vim.pack.Spec | string)[]
 local specs = {
   'https://github.com/neovim/nvim-lspconfig',
