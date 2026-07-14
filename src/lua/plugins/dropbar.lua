@@ -48,7 +48,6 @@ local symbols_ext = {
   RuleSet = '󰅩 ',
   Scope = '󰅩 ',
   Section = '󰅩 ',
-  Snippet = '󰩫 ',
   Specifier = '󰦪 ',
   Statement = '󰞷 ',
   SwitchStatement = '󰺟 ',
