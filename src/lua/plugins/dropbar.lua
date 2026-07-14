@@ -59,7 +59,8 @@ local symbols_ext = {
   WhileStatement = '󰑖 ',
 }
 
-vim.api.nvim_create_autocmd("BufModifiedSet", {
+vim.api.nvim_create_autocmd("OptionSet", {
+  pattern = "modified",
   callback = function()
     if vim.api.nvim_buf_get_name(0) == ''
         and not vim.bo.modified then
