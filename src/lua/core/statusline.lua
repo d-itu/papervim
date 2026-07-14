@@ -43,7 +43,7 @@ vim.api.nvim_create_autocmd('ModeChanged', {
 
 local function on_hl()
   set_mode_colors()
-  vim.api.nvim_set_hl(0, "StatusLineVisual", {
+  vim.api.nvim_set_hl(0, "PVShowCmd", {
     fg = vim.api.nvim_get_hl(0, { name = "@function", link = false }).fg,
     italic = true,
   })
@@ -64,35 +64,6 @@ function _G.branch()
   return ""
 end
 
-local visual_size = ""
-function _G.visual_size() return visual_size end
-
----@param f 'line' | 'col'
----@return integer
-local function count(f)
-  local x = vim.fn[f]('v')
-  local y = vim.fn[f]('.')
-  return math.max(x, y) - math.min(x, y) + 1
-end
-
-local function update_visual_count()
-  local mode = vim.fn.mode()
-  if mode == 'v' then
-    local l = count 'line'
-    if l > 1 then
-      visual_size = ("%d lines selected"):format(l)
-    else
-      visual_size = ("%d cols selected"):format(count 'col')
-    end
-  elseif mode == 'V' then
-    visual_size = ("%d lines selected"):format(count 'line')
-  elseif mode == '' then
-    visual_size = ("%dL x %dC selected"):format(count 'line', count 'col')
-  else
-    visual_size = ""
-  end
-end
-
 ---@type integer?
 local line_count_cb
 vim.api.nvim_create_autocmd("ModeChanged", {
@@ -101,33 +72,6 @@ vim.api.nvim_create_autocmd("ModeChanged", {
     if line_count_cb then
       vim.api.nvim_del_autocmd(line_count_cb)
       line_count_cb = nil
-    end
-  end,
-  group = group,
-})
-
-vim.api.nvim_create_autocmd("ModeChanged", {
-  pattern = "[vV]*:*",
-  callback = function()
-    update_visual_count()
-    vim.api.nvim__redraw { statusline = true }
-  end,
-  group = group,
-})
-
-vim.api.nvim_create_autocmd("ModeChanged", {
-  pattern = "[^vV]*:[vV]*",
-  callback = function()
-    update_visual_count()
-    vim.api.nvim__redraw { statusline = true }
-
-    if not line_count_cb then
-      line_count_cb = vim.api.nvim_create_autocmd("CursorMoved", {
-        callback = function()
-          update_visual_count(vim.fn.mode())
-        end,
-        group = group,
-      })
     end
   end,
   group = group,
@@ -168,9 +112,10 @@ vim.o.statusline = table.concat {
   "%<",
   "%{%v:lua.vim.diagnostic.status()%}",
   "%=",
-  "%#StatusLineVisual#%{v:lua.visual_size()}",
+  "%#PVShowCmd#%S",
   "%{%v:lua.diff()%}",
   "%#StatusLine# %{&filetype}",
   " %p%%%L %l:%c",
   " %@v:lua.require'core.message'.show@ %T",
 }
+vim.o.showcmdloc = "statusline"

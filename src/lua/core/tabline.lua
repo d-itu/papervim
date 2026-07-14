@@ -36,28 +36,6 @@ vim.api.nvim_create_autocmd('DiagnosticChanged', {
   end,
 })
 
-local function reverse(name)
-  local fill = vim.api.nvim_get_hl(0, { name = name, link = false })
-  if fill.reverse then
-    local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
-    vim.api.nvim_set_hl(0, name, {
-      reverse = false,
-      fg = fill.bg or normal.fg,
-      bg = fill.fg or normal.fg,
-    })
-  end
-end
-
-local function on_colorscheme()
-  reverse "TabLineFill"
-  reverse "TabLine"
-  reverse "TabLineSel"
-end
-on_colorscheme()
-vim.api.nvim_create_autocmd("ColorScheme", {
-  callback = on_colorscheme,
-})
-
 ---@param buf integer
 ---@return string
 local function render_buffer(buf)
@@ -70,7 +48,7 @@ local function render_buffer(buf)
   local diag_severity = diag_severity_most(diag_count)
   local diag_sum = diag_sum(diag_count)
   local diag = diag_severity and f("%${}${} ", diag_hl[diag_severity], diag_sum) or ""
-  local modified = vim.bo[buf].modified and "%$DiffViewStatusModified$ " or ""
+  local modified = vim.bo[buf].modified and "%$Changed$ " or ""
   return f("%{}@v:lua.switch_buffer@%#{}# {}%#{}#{} {}{}%T", buf, hl, icon, hl, filename, diag, modified)
 end
 

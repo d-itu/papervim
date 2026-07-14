@@ -68,6 +68,31 @@ vim.api.nvim_create_autocmd("BufEnter", {
   end,
 })
 
+local function reverse(name)
+  local fill = vim.api.nvim_get_hl(0, { name = name, link = false })
+  if fill.reverse then
+    local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+    vim.api.nvim_set_hl(0, name, {
+      reverse = false,
+      fg = fill.bg or normal.fg,
+      bg = fill.fg or normal.fg,
+    })
+  end
+end
+
+local function on_colorscheme()
+  reverse "TabLineFill"
+  reverse "TabLine"
+  reverse "TabLineSel"
+  reverse "StatusLine"
+  reverse "StatusLineNC"
+  reverse "StatusTermLine"
+  reverse "StatusTermLineNC"
+end
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = on_colorscheme,
+})
+
 require "core.colorscheme"
 require "core.statusline"
 require "core.tabline"
