@@ -3,7 +3,6 @@
 local bit = require "bit"
 
 local f = require 'core.format'
-require "plugins.image"
 require "plugins.mini-icons"
 local icons = require 'mini.icons'
 

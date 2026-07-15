@@ -28,7 +28,6 @@ local specs = {
   "https://github.com/saghen/blink.lib",
   "https://github.com/d-itu/lua-format",
   "https://github.com/folke/snacks.nvim", -- for fzf image preview
-  "https://github.com/3rd/image.nvim",
 
   -- colorschemes
   { src = "https://github.com/rose-pine/neovim", name = "rose-pine" },
