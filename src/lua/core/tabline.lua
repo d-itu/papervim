@@ -64,7 +64,7 @@ function _G.tabline_normal()
   local result = vim.iter(vim.api.nvim_list_bufs())
       :filter(vim.api.nvim_buf_is_loaded)
       :filter(function(buf) return buf ~= buf_to_delete end)
-      :filter(function(buf) return vim.bo[buf].buftype == '' end)
+      :filter(function(buf) return vim.bo[buf].buflisted end)
       :map(render_buffer)
       :join('') .. "%#TabLineFill#"
   buf_to_delete = nil
