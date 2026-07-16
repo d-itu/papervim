@@ -14,6 +14,7 @@ vim.lsp.config.lua_ls = {
     Lua = {
       diagnostics = {
         disable = { "redefined-local" },
+        unusedLocalExclude = { "_*" },
       },
       runtime = {
         pathStrict = true,

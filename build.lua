@@ -167,6 +167,10 @@ local function generate_luarc()
       "${3rd}/luv/library",
       unpack(libraries:totable())
     },
+    diagnostics = {
+      unusedLocalExclude = { "_*" },
+      disable = { "redefined-local" },
+    },
   }
 
   local file, err = io.open(".luarc.json", "w")
