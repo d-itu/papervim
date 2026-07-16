@@ -93,12 +93,20 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   callback = on_colorscheme,
 })
 
-require "core.colorscheme"
-require "core.statusline"
-require "core.tabline"
+vim.api.nvim_create_autocmd("UIEnter", {
+  group = group,
+  callback = function()
+    require "core.ui"
+    require "core.statusline"
+    require "core.tabline"
 
-require "plugins.fzf"
-require "plugins.which-key"
+    require "plugins.fzf"
+    require "plugins.which-key"
+  end,
+  once = true,
+})
+
+require "core.colorscheme"
 
 if vim.fn.argc() == 1 then
   local path = vim.fn.argv()[1]
