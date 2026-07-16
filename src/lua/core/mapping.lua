@@ -76,20 +76,6 @@ vim.keymap.set('v', '>', '>gv', desc 'Indent Right')
 vim.keymap.set('n', 'q:', '<Nop>', { noremap = true })
 vim.keymap.set('n', 'q;', 'q:', { noremap = true })
 
--- vim.keymap.set('n', '<C-LeftMouse>', function()
---   vim.cmd [[exe "silent normal! \<LeftMouse>"]]
---
---   -- gx
---   local uri = vim.fn.expand "<cfile>"
---   if uri:match 'https?://' then
---     vim.ui.open(uri)
---     return
---   end
---
---   local _, err = pcall(vim.api.nvim_command, [[silent normal! ]])
---   if err then vim.notify_once(err:match ': (.*)', vim.log.levels.WARN) end
--- end, desc 'Open URI or Jump')
-
 vim.keymap.set('x', '/', function()
   return require 'vim._comment'.operator() .. 'gvj'
 end, {
@@ -132,3 +118,19 @@ vim.keymap.set({ 'x', 'o' }, '<BS>', function()
   end
   vim.cmd "normal! \b"
 end, { desc = 'Select child (inner) node' })
+
+vim.keymap.set('n', "<C-LeftMouse>", function()
+  local mouse = vim.fn.getmousepos()
+  local inlay_hint = require "core.inlay_hint"
+  if inlay_hint(0, mouse.line - 1, mouse.column - 1) then return end
+
+  vim.api.nvim_win_set_cursor(mouse.winid, { mouse.line, mouse.column - 1 })
+
+  local url = vim.fn.expand "<cfile>"
+  if url:match 'https?://' then
+    vim.ui.open(url)
+    return
+  end
+
+  vim.api.nvim_feedkeys("", "n", false)
+end, { desc = 'Goto or open item under mouse' })
