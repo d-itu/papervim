@@ -12,13 +12,23 @@ vim.lsp.config.qmlls = {
 vim.lsp.config.lua_ls = {
   settings = {
     Lua = {
+      completion = {
+        postfix = ".",
+      },
       diagnostics = {
         disable = { "redefined-local" },
         unusedLocalExclude = { "_*" },
       },
+      hint = {
+        setType = true,
+      },
       runtime = {
         pathStrict = true,
-      }
+      },
+      type = {
+        checkTableShape = true,
+        inferParamName = true,
+      },
     }
   }
 }
