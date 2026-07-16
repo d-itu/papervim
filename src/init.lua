@@ -3,6 +3,14 @@ require "core.mapping"
 
 local group = require "core.augroup"
 
+vim.api.nvim_create_autocmd("BufWrite", {
+  group = group,
+  callback = function()
+    vim.fn.mkdir(vim.fs.dirname(vim.fn.expand "%"), "p")
+  end,
+  desc = "mkdir before write",
+})
+
 vim.api.nvim_create_autocmd('TextYankPost', {
   group = group,
   callback = function() vim.hl.on_yank() end,
