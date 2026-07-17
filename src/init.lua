@@ -59,15 +59,6 @@ if vim.fn.argc() == 1 then
   end
 end
 
-if vim.o.shellpipe then
-  vim.api.nvim_create_autocmd("VimEnter", {
-    callback = function()
-      vim.o.modified = false
-    end,
-    once = true,
-  })
-end
-
 vim.filetype.add {
   extension = {
     nisba = 'nisba',

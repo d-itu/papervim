@@ -62,7 +62,18 @@ local function on_colorscheme()
 end
 on_colorscheme()
 vim.api.nvim_create_autocmd("ColorScheme", {
+  group = group,
   callback = on_colorscheme,
+  desc = "modify tabline and statusline highlight",
+})
+
+vim.api.nvim_create_autocmd("StdinReadPost", {
+  group = group,
+  callback = function()
+    vim.bo.buftype = "nofile"
+  end,
+  once = true,
+  desc = "set buftype when read from stdin",
 })
 
 vim.api.nvim_create_user_command('Messages', require 'core.message'.show, {})
