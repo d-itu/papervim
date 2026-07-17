@@ -30,6 +30,7 @@ fyler.setup {
   integrations = {
     icon = "mini_icons",
   },
+  follow_current_file = false,
   extensions = {
     git = {
       enabled = true,
