@@ -5,6 +5,7 @@ local specs = {
 
   -- cmp
   "https://github.com/saghen/blink.cmp",
+  "https://github.com/milanglacier/minuet-ai.nvim",
 
   -- ui
   "https://github.com/j-hui/fidget.nvim",

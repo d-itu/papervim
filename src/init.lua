@@ -25,6 +25,7 @@ lazy({ 'InsertEnter', 'CmdlineEnter' }, function()
   require 'plugins.blink-cmp'
   require 'plugins.nvim-autopairs'
   require 'plugins.nvim-ts-autotag'
+  require 'plugins.minuet-ai'
 end)
 
 lazy("BufEnter", function()
