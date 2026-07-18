@@ -1,3 +1,0 @@
--- vim.api.nvim_set_hl(0, "CursorLineSign", { link = "SignColumn" })
--- vim.api.nvim_set_hl(0, "CursorLineFold", { link = "FoldColumn" })
--- vim.api.nvim_set_hl(0, "CursorLineNr", {})
