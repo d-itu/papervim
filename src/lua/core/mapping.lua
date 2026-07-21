@@ -53,21 +53,11 @@ vim.keymap.set('n', '<C-Right>', '<cmd>vertical resize -1<CR>', desc 'Resize Rig
 -- Search
 vim.keymap.set('n', '', function() vim.o.hlsearch = false end, desc 'Disable Highlight Search')
 vim.keymap.set({ "n", "x", "o" }, "n", function()
-  vim.o.hlsearch = true
   if vim.v.searchforward == 1 then return 'n' else return 'N' end
 end, { expr = true, desc = "Search Next" })
 vim.keymap.set({ "n", "x", "o" }, "N", function()
-  vim.o.hlsearch = true
   if vim.v.searchforward == 1 then return 'N' else return 'n' end
 end, { expr = true, desc = "Search Prev" })
-vim.keymap.set({ "n", "x" }, "#", function()
-  vim.o.hlsearch = true
-  return "#"
-end, { expr = true, desc = "Search Forward" })
-vim.keymap.set({ "n", "x" }, "*", function()
-  vim.o.hlsearch = true
-  return "*"
-end, { expr = true, desc = "Search Backward" })
 
 vim.keymap.set('v', 'p', 'P', desc 'Paste') -- paste without yank
 vim.keymap.set('v', '<', '<gv', desc 'Indent Left')

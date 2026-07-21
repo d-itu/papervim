@@ -1,5 +1,23 @@
 local group = require "core.augroup"
 
+vim.api.nvim_create_autocmd("CmdlineEnter", {
+  group = group,
+  pattern = [=[[/\?]]=],
+  callback = function()
+    vim.go.hlsearch = true
+  end,
+  desc = "set hlsearch"
+})
+
+vim.api.nvim_create_autocmd("CmdlineLeave", {
+  group = group,
+  pattern = [=[[/\?]]=],
+  callback = function()
+    vim.go.hlsearch = false
+  end,
+  desc = "unset hlsearch"
+})
+
 vim.api.nvim_create_autocmd("BufWinEnter", {
   group = group,
   callback = function()

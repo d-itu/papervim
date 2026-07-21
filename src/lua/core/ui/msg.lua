@@ -163,6 +163,19 @@ local function get_history_buf()
   return histroy_buf
 end
 
+local search_count
+local search_count_buf
+
+vim.api.nvim_create_autocmd("OptionSet", {
+  pattern = "hlsearch",
+  callback = function()
+    if not vim.go.hlsearch and search_count and vim.api.nvim_buf_is_loaded(search_count_buf) then
+      vim.api.nvim_buf_del_extmark(search_count_buf, utils.ns, search_count)
+    end
+  end,
+  group = require "core.augroup"
+})
+
 return {
   ---@param kind kind
   ---@param content content_entry[]
@@ -172,6 +185,26 @@ return {
   ---@param id integer | string
   ---@param _trigger trigger
   msg_show = function(kind, content, _replace_last, history, _append, id, _trigger)
+    if kind == "search_cmd" then return end
+    if kind == "search_count" then
+      vim.schedule(function()
+        vim.go.hlsearch = true
+        search_count_buf = vim.api.nvim_get_current_buf()
+        search_count = vim.api.nvim_buf_set_extmark(0, utils.ns, vim.api.nvim_win_get_cursor(0)[1] - 1, 0, {
+          virt_text = { { content[1][2], { "DiagnosticVirtualTextInfo" } } },
+          id = search_count
+        })
+      end)
+      return
+    end
+    if kind == "list_cmd" then
+      vim.schedule(function()
+        local buf = utils.float()
+        utils.cursor(buf).render(content)
+        vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
+      end)
+      return
+    end
     if kind == "empty" then return end
 
     vim.schedule(function()
