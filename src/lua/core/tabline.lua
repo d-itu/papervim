@@ -8,6 +8,11 @@ function _G.switch_buffer(buf)
   vim.api.nvim_win_set_buf(0, buf)
 end
 
+---@param tab integer
+function _G.switch_tabpage(tab)
+  vim.api.nvim_set_current_tabpage(tab)
+end
+
 ---@alias diag_count table<vim.diagnostic.Severity, integer>
 
 ---@param count diag_count
@@ -52,6 +57,13 @@ local function render_buffer(buf)
   return f("%{}@v:lua.switch_buffer@%#{}# {}%#{}#{} {}{}%T", buf, hl, icon, hl, filename, diag, modified)
 end
 
+---@param tab integer
+---@return string
+local function render_tabpage(tab)
+  local hl = vim.api.nvim_get_current_tabpage() == tab and "TabLineSel" or "TabLine"
+  return f("%{}@v:lua.switch_tabpage@%#{}# {} %T", tab, hl, tab % 10)
+end
+
 local buf_to_delete
 vim.api.nvim_create_autocmd("BufDelete", {
   callback = function(arg)
@@ -61,14 +73,18 @@ vim.api.nvim_create_autocmd("BufDelete", {
 })
 
 function _G.tabline_normal()
-  local result = vim.iter(vim.api.nvim_list_bufs())
+  local buffers = vim.iter(vim.api.nvim_list_bufs())
       :filter(vim.api.nvim_buf_is_loaded)
       :filter(function(buf) return buf ~= buf_to_delete end)
       :filter(function(buf) return vim.bo[buf].buflisted end)
       :map(render_buffer)
       :join('') .. "%#TabLineFill#"
   buf_to_delete = nil
-  return result
+  local tabpages = vim.api.nvim_list_tabpages()
+  local tabpages = #tabpages > 1
+      and vim.iter(vim.api.nvim_list_tabpages()):map(render_tabpage):join('')
+      or ""
+  return buffers .. '%=' .. tabpages
 end
 
 vim.o.tabline = "%{%v:lua.tabline_normal()%}"
