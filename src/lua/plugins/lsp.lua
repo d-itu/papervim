@@ -185,8 +185,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
 vim.api.nvim_create_autocmd("LspAttach", {
   group = group,
   callback = function()
-    require "plugins.fidget"
-
     vim.lsp.log.set_level 'OFF'
     vim.lsp.inlay_hint.enable(true)
     vim.lsp.inline_completion.enable(true);

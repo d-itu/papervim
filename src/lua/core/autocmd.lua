@@ -89,4 +89,16 @@ vim.api.nvim_create_autocmd("StdinReadPost", {
   desc = "set buftype when read from stdin",
 })
 
-vim.api.nvim_create_user_command('Messages', require 'core.message'.show, {})
+vim.api.nvim_create_autocmd("LspProgress", {
+  callback = function(ev)
+    local value = ev.data.params.value
+    vim.api.nvim_echo({ { value.message or 'done' } }, false, {
+      id = 'lsp.' .. ev.data.params.token,
+      kind = 'progress',
+      source = 'vim.lsp',
+      title = value.title,
+      status = value.kind ~= 'end' and 'running' or 'success',
+      percent = value.percentage,
+    })
+  end,
+})

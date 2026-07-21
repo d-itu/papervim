@@ -8,7 +8,6 @@ local specs = {
   "https://github.com/milanglacier/minuet-ai.nvim",
 
   -- ui
-  "https://github.com/j-hui/fidget.nvim",
   "https://github.com/FylerOrg/fyler.nvim",
   "https://github.com/Bekaboo/dropbar.nvim",
   "https://github.com/folke/which-key.nvim",

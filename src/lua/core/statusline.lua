@@ -106,16 +106,25 @@ vim.api.nvim_create_autocmd("User", {
   end,
 })
 
+if not _G.showcmd then
+  function _G.showcmd()
+    return ""
+  end
+end
+
+function _G.message()
+  vim.cmd "message"
+end
+
 vim.o.statusline = table.concat {
   "%#Mode#  ",
   "%#StatusLine#%{v:lua.branch()}",
   "%<",
   "%{%v:lua.vim.diagnostic.status()%}",
   "%=",
-  "%#PVShowCmd#%S",
+  "%#PVShowCmd#%{v:lua.showcmd()}",
   "%{%v:lua.diff()%}",
   "%#StatusLine# %{&filetype}",
   " %p%%%L %l:%c",
-  " %@v:lua.require'core.message'.show@ %T",
+  " %@v:lua.message@ %T",
 }
-vim.o.showcmdloc = "statusline"
