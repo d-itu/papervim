@@ -187,6 +187,8 @@ local function brush(buf, ns)
   }
 end
 
+local ns = vim.api.nvim_create_namespace("render_dir")
+
 ---@param buf integer
 ---@param dir_path string
 local function render_dir(buf, dir_path)
@@ -239,7 +241,6 @@ local function render_dir(buf, dir_path)
     return x.name < y.name
   end)
 
-  local ns = vim.api.nvim_create_namespace("")
   local b = brush(buf, ns)
   for i, entry in ipairs(entries) do
     b.append_with_hl(entry.icon, entry.icon_hl)
