@@ -13,14 +13,14 @@ local specs = {
   "https://github.com/folke/which-key.nvim",
   "https://github.com/petertriho/nvim-scrollbar",
   "https://github.com/d-itu/indentify",
+  "https://github.com/ibhagwan/fzf-lua",
+  "https://github.com/lewis6991/gitsigns.nvim",
+  "https://github.com/meanderingprogrammer/render-markdown.nvim",
 
   -- utils
-  "https://github.com/lewis6991/gitsigns.nvim",
   "https://github.com/kylechui/nvim-surround",
   "https://github.com/windwp/nvim-autopairs",
   "https://github.com/windwp/nvim-ts-autotag",
-  "https://github.com/ibhagwan/fzf-lua",
-  "https://github.com/meanderingprogrammer/render-markdown.nvim",
   "https://github.com/acidsugarx/babel.nvim",
 
   -- deps
