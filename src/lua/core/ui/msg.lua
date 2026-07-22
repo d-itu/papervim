@@ -212,6 +212,7 @@ return {
       return
     end
     if kind == "empty" then return end
+    if kind == "undo" then return end
     if kind == "" then return end
 
     vim.schedule(function()
@@ -237,12 +238,14 @@ return {
       local cursor = utils.cursor(buf)
       for _, entry in ipairs(entries) do
         local kind, content, _ = unpack(entry)
+        if kind == "undo" then goto continue end
         vim.api.nvim_buf_set_extmark(buf, utils.ns, cursor.row(), cursor.col(), {
           virt_text = { { kind, "LspInlayHint" } },
           virt_text_pos = "right_align",
         })
         cursor.render(content)
         cursor.append("\n")
+        ::continue::
       end
       vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
     end
