@@ -35,6 +35,10 @@ update:
 sync:
 	nvim -l build.lua sync
 
+.PHONY: clean_plugins
+clean_plugins:
+	nvim -l build.lua clean
+
 .PHONY: resources
 resources:
 	rsync -av --delete \
