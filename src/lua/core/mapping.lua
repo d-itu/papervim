@@ -31,13 +31,34 @@ vim.keymap.set('n', '<C-l>', '<C-w>l', desc 'Window Right')
 -- Buffer Navigation
 vim.keymap.set('n', '<C-Tab>', vim.cmd.bn, desc 'Buffer Next')
 vim.keymap.set('n', '<S-Tab>', vim.cmd.bp, desc 'Buffer Previous')
+
 vim.keymap.set('n', '\\x', function()
-  local buf = vim.api.nvim_get_current_buf()
-  if vim.api.nvim_get_option_value("buftype", {}) == "" then
-    vim.api.nvim_cmd({ cmd = "bprevious" }, {})
+  local win = vim.api.nvim_get_current_win()
+  local buf = vim.api.nvim_win_get_buf(win)
+
+  if vim.api.nvim_get_option_value("modified", { buf = buf }) then
+    vim.api.nvim_echo({ { "No write since last change" } }, true, { err = true })
+    return
   end
-  vim.api.nvim_buf_delete(buf, {})
-end, desc 'Buffer Delete')
+
+  local list, _pos = unpack(vim.fn.getjumplist())
+  ---@param entry vim.fn.getjumplist.ret.item
+  ---@type vim.fn.getjumplist.ret.item
+  local entry = vim.iter(list):rfind(function(entry)
+    return vim.fn.buflisted(entry.bufnr) == 1 and entry.bufnr ~= buf
+  end)
+
+  if entry then
+    vim.api.nvim_win_set_buf(win, entry.bufnr)
+    vim.api.nvim_win_set_cursor(win, { entry.lnum, entry.col })
+  else
+    vim.api.nvim_win_set_buf(win, vim.api.nvim_create_buf(true, false))
+  end
+
+  if #vim.fn.win_findbuf(buf) == 0 then
+    vim.api.nvim_buf_delete(buf, {})
+  end
+end, desc 'Close Current Buffer')
 
 -- Tab Navigation
 vim.keymap.set('n', '<M-Tab>', vim.cmd.tabnext, desc 'Tab Next')
