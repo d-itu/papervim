@@ -4,12 +4,21 @@ local f = require 'core.format'
 local mini_icon = require "mini.icons"
 
 ---@param buf integer
-function _G.switch_buffer(buf)
-  vim.api.nvim_win_set_buf(0, buf)
+---@param button 'l' | 'm' | 'r'
+function _G.buffer_click(buf, _, button)
+  if button == 'l' then
+    vim.api.nvim_win_set_buf(0, buf)
+  elseif button == 'r' and buf ~= vim.api.nvim_get_current_buf() then
+    local ok = pcall(vim.api.nvim_buf_delete, buf, {})
+    if not ok then
+      vim.api.nvim_echo({ { vim.v.errmsg } }, true, { err = true })
+      return
+    end
+  end
 end
 
 ---@param tab integer
-function _G.switch_tabpage(tab)
+function _G.tabpage_click(tab)
   vim.api.nvim_set_current_tabpage(tab)
 end
 
@@ -54,14 +63,14 @@ local function render_buffer(buf)
   local diag_sum = diag_sum(diag_count)
   local diag = diag_severity and f("%${}${} ", diag_hl[diag_severity], diag_sum) or ""
   local modified = vim.bo[buf].modified and "%$Changed$ " or ""
-  return f("%{}@v:lua.switch_buffer@%#{}# {}%#{}#{} {}{}%T", buf, hl, icon, hl, filename, diag, modified)
+  return f("%{}@v:lua.buffer_click@%#{}# {}%#{}#{} {}{}%T", buf, hl, icon, hl, filename, diag, modified)
 end
 
 ---@param tab integer
 ---@return string
 local function render_tabpage(tab)
   local hl = vim.api.nvim_get_current_tabpage() == tab and "TabLineSel" or "TabLine"
-  return f("%{}@v:lua.switch_tabpage@%#{}# {} %T", tab, hl, tab % 10)
+  return f("%{}@v:lua.tabpage_click@%#{}# {} %T", tab, hl, tab % 10)
 end
 
 local buf_to_delete
