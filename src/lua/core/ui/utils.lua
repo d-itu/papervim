@@ -39,6 +39,30 @@ local function cursor(buf)
   }
 end
 
+local margin = 0.12
+---@return integer buf, integer win
+local function float()
+  local buf = vim.api.nvim_create_buf(false, true)
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    width = math.ceil(vim.go.columns * (1 - 2 * margin)),
+    height = math.ceil(vim.go.lines * (1 - 2 * margin)),
+    col = math.floor(vim.go.columns * margin),
+    row = math.floor(vim.go.lines * margin),
+    style = "minimal",
+  })
+  vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
+  vim.api.nvim_buf_set_keymap(buf, "n", "", "<cmd>q<cr>", {})
+  vim.api.nvim_create_autocmd("WinLeave", {
+    callback = function()
+      vim.api.nvim_win_close(win, true)
+    end,
+    once = true,
+    buf = buf,
+  })
+  return buf, win
+end
+
 return {
   ---@param content content_entry[]
   ---@return string
@@ -47,4 +71,5 @@ return {
   end,
   ns = ns,
   cursor = cursor,
+  float = float,
 }

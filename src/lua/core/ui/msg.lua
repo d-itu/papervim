@@ -147,6 +147,7 @@ local function update(id, content, kind, history)
     row = vim.go.lines - line,
     col = vim.go.columns,
     style = "minimal",
+    zindex = 300,
   })
   local kind_bg = bg[kind] or (history and "Info" or "Hint")
   vim.api.nvim_set_option_value("winhighlight", "Normal:DiagnosticVirtualText" .. kind_bg, {
@@ -166,17 +167,6 @@ local function update(id, content, kind, history)
     height = height,
     line = line,
   }
-end
-
----@type integer?
-local histroy_buf
-
----@return integer
-local function get_history_buf()
-  if not histroy_buf or not vim.api.nvim_buf_is_valid(histroy_buf) then
-    histroy_buf = vim.api.nvim_create_buf(true, true)
-  end
-  return histroy_buf
 end
 
 local search_count
@@ -222,6 +212,7 @@ return {
       return
     end
     if kind == "empty" then return end
+    if kind == "" then return end
 
     vim.schedule(function()
       update(id, content, kind, history)
@@ -241,7 +232,7 @@ return {
 
       update(0, content, kind, false)
     else
-      local buf = get_history_buf()
+      local buf = utils.float()
       vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
       local cursor = utils.cursor(buf)
       for _, entry in ipairs(entries) do
