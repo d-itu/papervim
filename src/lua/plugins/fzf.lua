@@ -49,7 +49,7 @@ vim.api.nvim_set_keymap("n", "\\ff", "", {
 })
 vim.api.nvim_set_keymap("n", "\\fw", "", {
   callback = fzf.live_grep,
-  desc = "fzf file",
+  desc = "fzf live_grep",
 })
 
 vim.keymap.set('n', 'grr', function()
