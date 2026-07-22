@@ -1,7 +1,7 @@
 ---@type (vim.pack.Spec | string)[]
 local specs = {
   'https://github.com/neovim/nvim-lspconfig',
-  'https://github.com/d-itu/nvim-treesitter',
+  'https://github.com/nvim-treesitter/nvim-treesitter',
 
   -- cmp
   "https://github.com/saghen/blink.cmp",
@@ -130,8 +130,10 @@ cp target/native/libblink_cmp_fuzzy.so lib/libblink_cmp_fuzzy.so
       }
     end,
   })
-  require "nvim-treesitter".setup()
-  require 'nvim-treesitter'.install(languages, { summary = true }):wait()
+  local nvim_treesitter = require "nvim-treesitter"
+  nvim_treesitter.setup()
+  nvim_treesitter.install(languages, { summary = true }):wait()
+  nvim_treesitter.update():wait()
 end
 
 ---@param spec vim.pack.Spec | string
