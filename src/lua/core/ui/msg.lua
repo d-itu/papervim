@@ -217,6 +217,10 @@ return {
       end)
       return
     end
+    if kind == "confirm" then
+      utils.confirm_msg.set(content)
+      return
+    end
     if kind == "empty" then return end
     if kind == "undo" then return end
     if kind == "" then return end

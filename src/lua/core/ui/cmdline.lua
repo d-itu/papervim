@@ -22,6 +22,8 @@ end
 
 local offset = 0
 local prompt_mark
+local last_prompt
+local last_confirm
 
 return {
   ---@param content content_entry[]
@@ -32,15 +34,22 @@ return {
   ---@param _level integer
   ---@param hl integer highlight of prompt
   cmdline_show = function(content, pos, firstc, prompt, indent, _level, hl)
-    local win = get_win()
+    require "core.debug"(prompt)
+    local confirm = utils.confirm_msg.take()
+    if confirm then last_confirm = confirm end
+    if not confirm and prompt ~= last_prompt then
+      last_confirm = nil
+    end
+    last_prompt = prompt
 
-    local text = utils.concat_content(content)
+    local win = get_win()
 
     ---@type [string, integer | string][]
     local prompt_virt_text
     local prefix = ""
     if firstc == ":" then
       vim.api.nvim_set_option_value("filetype", "vim", { buf = buf })
+      local text = utils.concat_content(content)
       local is_lua = text:match "%s*lua%s+" or text:match "%s*="
       prompt_virt_text = { is_lua and { "  ", "MiniIconsGreen" } or { "  ", "MiniIconsCyan" } }
     elseif firstc == "=" then
@@ -50,7 +59,16 @@ return {
     else
       vim.api.nvim_set_option_value("filetype", "", { buf = buf })
       vim.treesitter.stop(buf)
-      prompt_virt_text = { { firstc == "" and prompt or firstc, hl } }
+
+      local confirm = last_confirm or {}
+      prompt_virt_text = vim.tbl_map(function(entry)
+        local _, text, hl = unpack(entry)
+        return { text, hl }
+      end, confirm)
+      if #confirm ~= 0 then
+        table.insert(prompt_virt_text, { " ", 0 })
+      end
+      table.insert(prompt_virt_text, { firstc == "" and prompt or firstc, hl })
     end
 
     local prefix_len = vim.fn.strdisplaywidth(prefix)
@@ -58,8 +76,11 @@ return {
       return acc + vim.fn.strdisplaywidth(entry[1])
     end)
 
-    local line = (' '):rep(offset - prefix_len) .. prefix .. text .. ' '
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, { line })
+    local cursor = utils.cursor(buf)
+    cursor.append((' '):rep(offset - prefix_len))
+    cursor.append(prefix)
+    cursor.render(content)
+    cursor.append ' '
     prompt_mark = vim.api.nvim_buf_set_extmark(buf, utils.ns, 0, 0, {
       virt_text = prompt_virt_text,
       virt_text_pos = "overlay",

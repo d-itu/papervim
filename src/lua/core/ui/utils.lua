@@ -63,6 +63,8 @@ local function float()
   return buf, win
 end
 
+local confirm_msg = nil
+
 return {
   ---@param content content_entry[]
   ---@return string
@@ -72,4 +74,14 @@ return {
   ns = ns,
   cursor = cursor,
   float = float,
+  confirm_msg = {
+    ---@param msg content_entry[]
+    set = function(msg) confirm_msg = msg end,
+    ---@return content_entry[]?
+    take = function()
+      local res = confirm_msg
+      confirm_msg = nil
+      return res
+    end,
+  },
 }
