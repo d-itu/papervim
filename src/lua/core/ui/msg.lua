@@ -59,30 +59,36 @@ local max_height = 30
 ---@type table<integer | string, item>
 local storage = {}
 
-local line_available = {}
+local line_occupied = {}
+
+---@param height integer
+---@param line integer
+---@return integer? step
+local function next_line(line, height)
+  for i = line, line + height - 1 do
+    if line_occupied[i] then
+      return i
+    end
+  end
+end
+
 ---@param height integer
 ---@return integer
 local function alloc_line(height)
   if height >= max_height then return 1 end
   local line = 1
   while line < max_height do
-    local is_free = true
-    for i = line, line + height - 1 do
-      if line_available[i] then
-        is_free = false
-        break
-      end
-    end
-    if is_free then
+    local next_line = next_line(line, height)
+    if not next_line then
       for i = line, line + height - 1 do
-        line_available[i] = true
+        line_occupied[i] = true
       end
       return line
     end
-    line = line + height
+    line = next_line + 1
   end
 
-  line_available = {}
+  line_occupied = {}
   return alloc_line(height)
 end
 
@@ -90,7 +96,7 @@ end
 ---@param line integer
 local function dealloc_line(line, height)
   for i = line, line + height - 1 do
-    line_available[i] = nil
+    line_occupied[i] = nil
   end
 end
 
