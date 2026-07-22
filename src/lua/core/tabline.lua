@@ -74,9 +74,7 @@ vim.api.nvim_create_autocmd("BufDelete", {
 
 function _G.tabline_normal()
   local buffers = vim.iter(vim.api.nvim_list_bufs())
-      :filter(vim.api.nvim_buf_is_loaded)
-      :filter(function(buf) return buf ~= buf_to_delete end)
-      :filter(function(buf) return vim.bo[buf].buflisted end)
+      :filter(function(buf) return buf ~= buf_to_delete and vim.fn.buflisted(buf) == 1 end)
       :map(render_buffer)
       :join('') .. "%#TabLineFill#"
   buf_to_delete = nil
