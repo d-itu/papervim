@@ -6,6 +6,7 @@ require "scrollbar.handlers.gitsigns".setup()
 require "scrollbar".setup {
   excluded_filetypes = {
     "fyler_finder",
+    "fzf",
   },
   excluded_buftypes = {
     "nofile",
