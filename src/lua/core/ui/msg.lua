@@ -1,4 +1,5 @@
 local utils = require "core.ui.utils"
+local f = require "core.format"
 
 local showcmd = ""
 
@@ -37,6 +38,19 @@ end
 --- | "wmsg"
 
 ---@alias trigger "" | "typed_cmd"
+
+local bg = {
+  emsg = "Error",
+  echoerr = "Error",
+  lua_error = "Error",
+  rpc_error = "Error",
+  shell_err = "Error",
+  wmsg = "Warn",
+  progress = "Ok"
+}
+
+local header = "▌"
+local header_width = vim.fn.strdisplaywidth(header)
 
 local timeout = 3500
 local max_width = 65
@@ -128,16 +142,18 @@ local function update(id, content, kind, history)
   local win = vim.api.nvim_open_win(buf, false, {
     relative = "editor",
     anchor = "SE",
-    width = math.min(width, max_width),
+    width = math.min(width, max_width) + header_width,
     height = height,
     row = vim.go.lines - line,
     col = vim.go.columns,
     style = "minimal",
   })
-  vim.api.nvim_set_option_value("winhighlight", "", {
+  local kind_bg = bg[kind] or (history and "Info" or "Hint")
+  vim.api.nvim_set_option_value("winhighlight", "Normal:DiagnosticVirtualText" .. kind_bg, {
     win = win,
     scope = "local",
   })
+  vim.api.nvim_set_option_value("statuscolumn", f("%#Diagnostic{}#{}", kind_bg, header), { win = win })
 
   local timer = assert(vim.uv.new_timer())
   timer:start(timeout, 0, function()
