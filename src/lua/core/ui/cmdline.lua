@@ -34,7 +34,6 @@ return {
   ---@param _level integer
   ---@param hl integer highlight of prompt
   cmdline_show = function(content, pos, firstc, prompt, indent, _level, hl)
-    require "core.debug"(prompt)
     local confirm = utils.confirm_msg.take()
     if confirm then last_confirm = confirm end
     if not confirm and prompt ~= last_prompt then
