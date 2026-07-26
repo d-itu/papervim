@@ -5,11 +5,13 @@ require "core.colorscheme"
 
 local group = require "core.augroup"
 
---- @param event vim.api.keyset.events|vim.api.keyset.events[]
---- @param callback fun()
-local function lazy(event, callback)
+---@param event vim.api.keyset.events|vim.api.keyset.events[]
+---@param callback fun()
+---@param pattern? string | string[]
+local function lazy(event, callback, pattern)
   vim.api.nvim_create_autocmd(event, {
     group = group,
+    pattern = pattern,
     callback = callback,
     once = true,
     desc = "lazy load"
@@ -20,6 +22,11 @@ lazy('FileType', function()
   require 'plugins.lsp'
   require 'plugins.dropbar'
 end)
+
+lazy('FileType', function()
+  require "plugins.render-markdown"
+  require "render-markdown".buf_enable()
+end, "markdown")
 
 lazy({ 'InsertEnter', 'CmdlineEnter' }, function()
   require 'plugins.blink-cmp'
