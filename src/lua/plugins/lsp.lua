@@ -149,16 +149,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 
     if client:supports_method('textDocument/documentHighlight') then
-      vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI", "CursorMoved", "CursorMovedI" }, {
-        group = vim.api.nvim_create_augroup("lsp_word_" .. args.buf, { clear = true }),
+      vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+        group = vim.api.nvim_create_augroup("doc_hl" .. args.buf, { clear = true }),
         buffer = args.buf,
-        callback = function(ev)
-          if ev.event:find("CursorMoved") then
-            pcall(vim.lsp.buf.clear_references)
-          else
-            pcall(vim.lsp.buf.document_highlight)
-          end
-        end,
+        callback = vim.lsp.buf.document_highlight,
+        desc = "set document highlight",
+      })
+      vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+        group = vim.api.nvim_create_augroup("doc_hl_clear" .. args.buf, { clear = true }),
+        buffer = args.buf,
+        callback = vim.lsp.buf.clear_references,
+        desc = "unset document highlight",
       })
     end
     -- if client:supports_method("textDocument/completion") then

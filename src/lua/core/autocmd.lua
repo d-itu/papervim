@@ -108,6 +108,7 @@ vim.api.nvim_create_autocmd("StdinReadPost", {
 })
 
 vim.api.nvim_create_autocmd("LspProgress", {
+  group = group,
   callback = function(ev)
     local value = ev.data.params.value
     vim.api.nvim_echo({ { value.message or 'done' } }, false, {
