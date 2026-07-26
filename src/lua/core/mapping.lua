@@ -36,6 +36,15 @@ vim.keymap.set('n', '\\x', function()
   local win = vim.api.nvim_get_current_win()
   local buf = vim.api.nvim_win_get_buf(win)
 
+  if vim.api.nvim_get_option_value("buftype", { buf = buf }) ~= "" then
+    vim.v.errmsg = ""
+    local ok, err = pcall(vim.api.nvim_win_close, win, false)
+    if not ok then
+      vim.api.nvim_echo({ { vim.v.errmsg ~= "" and vim.v.errmsg or err } }, true, { err = true })
+    end
+    return
+  end
+
   if vim.api.nvim_get_option_value("modified", { buf = buf }) then
     vim.api.nvim_echo({ { "No write since last change" } }, true, { err = true })
     return
