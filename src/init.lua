@@ -1,6 +1,8 @@
+require "core.ui"
 require "core.options"
 require "core.mapping"
 require "core.autocmd"
+require "core.session"
 require "core.colorscheme"
 
 local group = require "core.augroup"
@@ -47,7 +49,6 @@ lazy("BufEnter", function()
 end)
 
 lazy("UIEnter", function()
-  require "core.ui"
   require "core.statusline"
   require "core.tabline"
 

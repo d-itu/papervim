@@ -40,9 +40,10 @@ local function cursor(buf)
 end
 
 local margin = 0.12
+---@param buf? integer
 ---@return integer buf, integer win
-local function float()
-  local buf = vim.api.nvim_create_buf(false, true)
+local function float(buf)
+  local buf = buf or vim.api.nvim_create_buf(false, true)
   local win = vim.api.nvim_open_win(buf, true, {
     relative = "editor",
     width = math.ceil(vim.go.columns * (1 - 2 * margin)),
