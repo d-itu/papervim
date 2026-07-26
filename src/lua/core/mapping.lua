@@ -144,6 +144,7 @@ vim.keymap.set('n', "<C-LeftMouse>", function()
   local inlay_hint = require "core.inlay_hint"
   if inlay_hint(0, mouse.line - 1, mouse.column - 1) then return end
 
+  vim.api.nvim_set_current_win(mouse.winid)
   vim.api.nvim_win_set_cursor(mouse.winid, { mouse.line, mouse.column - 1 })
 
   local url = vim.fn.expand "<cfile>"
