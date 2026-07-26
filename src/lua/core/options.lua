@@ -63,6 +63,14 @@ vim.o.spelloptions = "noplainbuffer,camel"
 
 vim.o.updatetime = 1
 
+function _G.pad()
+  if vim.bo.buftype == "" then return ' ' end
+  return ""
+end
+
+vim.o.signcolumn = 'yes'
+vim.o.statuscolumn = "%s%l%C%{v:lua.pad()}"
+
 vim.o.foldlevelstart = 99
 vim.o.foldtext = "v:lua.foldtext()"
 vim.o.foldcolumn = "auto"

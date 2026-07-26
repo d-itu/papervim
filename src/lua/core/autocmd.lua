@@ -18,31 +18,6 @@ vim.api.nvim_create_autocmd("CmdlineLeave", {
   desc = "unset hlsearch"
 })
 
-vim.api.nvim_create_autocmd("BufWinEnter", {
-  group = group,
-  callback = function()
-    if vim.bo.buftype == "" then
-      vim.wo.statuscolumn = "%s%l%C "
-    else
-      vim.wo.statuscolumn = ""
-    end
-  end,
-  desc = "set statuscolumn"
-})
-
-vim.api.nvim_create_autocmd("OptionSet", {
-  group = group,
-  pattern = "buftype",
-  callback = function()
-    if vim.bo.buftype == "" then
-      vim.wo.statuscolumn = "%s%l%C "
-    else
-      vim.wo.statuscolumn = ""
-    end
-  end,
-  desc = "set statuscolumn"
-})
-
 vim.api.nvim_create_autocmd("BufWrite", {
   group = group,
   callback = function()
