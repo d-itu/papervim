@@ -1,3 +1,5 @@
+---@param desc string
+---@return vim.keymap.set.Opts
 local desc = function(desc)
   return {
     silent = true,
@@ -6,7 +8,7 @@ local desc = function(desc)
   }
 end
 
-vim.keymap.set('n', '<C-a>', 'ggVG', desc 'Select All')
+vim.keymap.set('n', '<C-a>', 'ggVG', desc 'Select all')
 vim.keymap.set("", 'x', '"_x', desc 'Cut')
 vim.keymap.set({ 'n', 'i' }, '<C-s>', vim.cmd.write, desc 'Save')
 
@@ -19,18 +21,18 @@ vim.keymap.set({ 'n', 'x' }, '+', '', desc 'Increase')
 vim.keymap.set({ 'n', 'x' }, '-', '', desc 'Decrease')
 vim.keymap.set('x', 'g+', 'g', desc 'Increase')
 vim.keymap.set('x', 'g-', 'g', desc 'Decrease')
-vim.keymap.set('n', '<leader>q', ':q!', desc 'Quit')
-vim.keymap.set('n', '<leader>qa', ':qa!', desc 'Quit All')
 
 -- Window Navigation
-vim.keymap.set('n', '<C-h>', '<C-w>h', desc 'Window Left')
-vim.keymap.set('n', '<C-j>', '<C-w>j', desc 'Window Down')
-vim.keymap.set('n', '<C-k>', '<C-w>k', desc 'Window Up')
-vim.keymap.set('n', '<C-l>', '<C-w>l', desc 'Window Right')
+vim.keymap.set('n', '<C-h>', '<C-w>h', desc 'Window left')
+vim.keymap.set('n', '<C-j>', '<C-w>j', desc 'Window down')
+vim.keymap.set('n', '<C-k>', '<C-w>k', desc 'Window up')
+vim.keymap.set('n', '<C-l>', '<C-w>l', desc 'Window right')
 
--- Buffer Navigation
-vim.keymap.set('n', '<C-Tab>', vim.cmd.bn, desc 'Buffer Next')
-vim.keymap.set('n', '<S-Tab>', vim.cmd.bp, desc 'Buffer Previous')
+-- Window Resizing
+vim.keymap.set('n', '<C-Up>', '<cmd>resize +1<CR>', desc 'Resize up')
+vim.keymap.set('n', '<C-Down>', '<cmd>resize -1<CR>', desc 'Resize down')
+vim.keymap.set('n', '<C-Left>', '<cmd>vertical resize +1<CR>', desc 'Resize left')
+vim.keymap.set('n', '<C-Right>', '<cmd>vertical resize -1<CR>', desc 'Resize right')
 
 vim.keymap.set('n', '\\x', function()
   local win = vim.api.nvim_get_current_win()
@@ -69,29 +71,18 @@ vim.keymap.set('n', '\\x', function()
   end
 end, desc 'Close Current Buffer')
 
--- Tab Navigation
-vim.keymap.set('n', '<M-Tab>', vim.cmd.tabnext, desc 'Tab Next')
-vim.keymap.set('n', '<M-S-Tab>', vim.cmd.tabprevious, desc 'Tab Previous')
-vim.keymap.set('n', '<leader><Tab>', vim.cmd.tabnext, desc 'Tab Next')
-
--- Window Resizing
-vim.keymap.set('n', '<C-Up>', '<cmd>resize +1<CR>', desc 'Resize Up')
-vim.keymap.set('n', '<C-Down>', '<cmd>resize -1<CR>', desc 'Resize Down')
-vim.keymap.set('n', '<C-Left>', '<cmd>vertical resize +1<CR>', desc 'Resize Left')
-vim.keymap.set('n', '<C-Right>', '<cmd>vertical resize -1<CR>', desc 'Resize Right')
-
 -- Search
-vim.keymap.set('n', '', function() vim.o.hlsearch = false end, desc 'Disable Highlight Search')
+vim.keymap.set('n', '', function() vim.o.hlsearch = false end, desc 'Disable highlight search')
 vim.keymap.set({ "n", "x", "o" }, "n", function()
   if vim.v.searchforward == 1 then return 'n' else return 'N' end
-end, { expr = true, desc = "Search Next" })
+end, { expr = true, desc = "Search next" })
 vim.keymap.set({ "n", "x", "o" }, "N", function()
   if vim.v.searchforward == 1 then return 'N' else return 'n' end
-end, { expr = true, desc = "Search Prev" })
+end, { expr = true, desc = "Search prev" })
 
 vim.keymap.set('v', 'p', 'P', desc 'Paste') -- paste without yank
-vim.keymap.set('v', '<', '<gv', desc 'Indent Left')
-vim.keymap.set('v', '>', '>gv', desc 'Indent Right')
+vim.keymap.set('v', '<', '<gv', desc 'Indent left')
+vim.keymap.set('v', '>', '>gv', desc 'Indent right')
 
 vim.keymap.set('n', 'q:', '<Nop>', { noremap = true })
 vim.keymap.set('n', 'q;', 'q:', { noremap = true })
@@ -108,7 +99,7 @@ end, {
   expr = true,
   desc = 'toggle comment'
 })
-vim.keymap.set('n', 'gco', 'oVcx<cmd>normal gcc<cr>fxa<bs>', desc 'Add Comment Bellow')
+vim.keymap.set('n', 'gco', 'oVcx<cmd>normal gcc<cr>fxa<bs>', desc 'Add comment bellow')
 
 vim.keymap.set('n', '<CR>', 'viw')
 
@@ -131,7 +122,7 @@ vim.keymap.set({ 'x', 'o' }, '<BS>', function()
     require 'vim.treesitter._select'.select_child(vim.v.count1)
     return
   end
-  local client = vim.lsp.get_clients({ method = 'textDocument/selectionRange', bufnr = 0 })[1]
+  local client = vim.lsp.get_clients { method = 'textDocument/selectionRange', bufnr = 0 }[1]
   if client then
     vim.lsp.buf.selection_range(-vim.v.count1)
     return
