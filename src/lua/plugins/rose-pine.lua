@@ -16,5 +16,6 @@ require "rose-pine".setup {
     FylerGitStaged        = { fg = groups.git_stage },
     FylerGitUntracked     = { fg = groups.git_untracked },
     ["@lsp.type.concept"] = { fg = palette.iris },
+    ["@lsp.type.escapeSequence"] = { link = "@string.escape" },
   },
 }
