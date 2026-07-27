@@ -78,6 +78,7 @@ require 'dropbar'.setup {
     enable = function(buf, win)
       if vim.wo[win].winbar ~= '' then return false end
       if vim.tbl_contains(disable_for_filetypes, vim.bo[buf].filetype) then return false end
+      if vim.bo[buf].buftype == "terminal" then return end
       if vim.api.nvim_buf_get_name(buf) == '' then
         return vim.bo[buf].filetype ~= '' and vim.bo.modified
       end

@@ -96,3 +96,60 @@ vim.api.nvim_create_autocmd("LspProgress", {
     })
   end,
 })
+
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = group,
+  callback = function()
+    if vim.bo.buftype == "terminal" and vim.bo.filetype == "" then
+      vim.cmd.startinsert()
+    end
+  end,
+  desc = "enter terminal"
+})
+
+---@param hl string
+local function clear(hl)
+  vim.api.nvim_set_hl(0, hl, { default = true })
+end
+
+local function default_hl()
+  clear "@module.rust"
+  clear "@variable.rust"
+  clear "@function.call.rust"
+
+  clear "@variable.cpp"
+  clear "@function.cpp"
+
+  clear "@constructor.lua"
+
+  -- include!(...)
+  clear "@lsp.type.string.rust"
+
+  clear "@lsp.type.string.python"
+  clear "@lsp.type.type.lua"
+
+  vim.api.nvim_set_hl(0, '@nospell.lua', { nocombine = true, default = true })
+  vim.api.nvim_set_hl(0, '@comment.documentation.lua', { nocombine = true, default = true })
+
+  ---@return vim.api.keyset.get_hl_info
+  local function query_hl(name) return vim.api.nvim_get_hl(0, { name = name, link = false }) end
+
+  local function_hl = query_hl("@function")
+  vim.api.nvim_set_hl(0, '@function.macro.vim', { fg = function_hl.fg, default = true })
+  vim.api.nvim_set_hl(0, '@lsp.typemod.operator.userDefined', { fg = function_hl.fg, default = true })
+  vim.api.nvim_set_hl(0, '@lsp.type.concept', { fg = function_hl.fg, default = true })
+  vim.api.nvim_set_hl(0, '@lsp.type.escapeSequence', { underline = true, default = true })
+  vim.api.nvim_set_hl(0, '@lsp.typemod.variable.mutable', { underline = true, default = true })
+
+  -- rust trait
+  vim.api.nvim_set_hl(0, '@lsp.type.interface.rust', { link = "@lsp.type.concept", default = true })
+  vim.api.nvim_set_hl(0, '@lsp.type.macro.lua', { link = "@type", default = true })
+end
+
+default_hl()
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = default_hl,
+  group = group,
+  desc = "language specific highlight"
+})

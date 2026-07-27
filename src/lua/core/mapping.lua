@@ -146,3 +146,7 @@ vim.keymap.set('n', "<C-LeftMouse>", function()
 
   vim.api.nvim_feedkeys("", "n", false)
 end, { desc = 'Goto or open item under mouse' })
+
+local terminal = require "core.terminal"
+vim.keymap.set({ 'n', 't' }, "<C-`>", terminal.split_terminal, { desc = "Split terminal" })
+vim.keymap.set({ 'n', 't' }, [[\\]], terminal.split_terminal, { desc = "Split terminal" })

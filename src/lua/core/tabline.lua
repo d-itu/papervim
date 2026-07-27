@@ -2,6 +2,16 @@ require 'plugins.mini-icons'
 
 local f = require 'core.format'
 local mini_icon = require "mini.icons"
+local terminal = require "core.terminal"
+
+function _G.buffer_add()
+  local buf = vim.api.nvim_create_buf(true, false)
+  local win = vim.api.nvim_get_current_win()
+  if win == terminal.terminal_win() then
+    terminal.new_terminal_buf(buf)
+  end
+  vim.api.nvim_set_current_buf(buf)
+end
 
 ---@param buf integer
 ---@param button 'l' | 'm' | 'r'
@@ -19,7 +29,7 @@ end
 
 ---@param tab integer
 function _G.tabpage_click(tab)
-  vim.api.nvim_set_current_tabpage(tab)
+  -- vim.api.nvim_set_current_tabpage(tab)
 end
 
 ---@alias diag_count table<vim.diagnostic.Severity, integer>
@@ -81,11 +91,18 @@ vim.api.nvim_create_autocmd("BufDelete", {
   end
 })
 
-function _G.tabline_normal()
+function _G.tabline()
+  local is_terminal = vim.bo.buftype == "terminal" and vim.bo.filetype == ""
   local buffers = vim.iter(vim.api.nvim_list_bufs())
-      :filter(function(buf) return buf ~= buf_to_delete and vim.fn.buflisted(buf) == 1 end)
+      :filter(function(buf)
+        return buf ~= buf_to_delete
+            and vim.fn.buflisted(buf) == 1
+            and is_terminal == (vim.bo[buf].buftype == "terminal")
+      end)
       :map(render_buffer)
-      :join('') .. "%#TabLineFill#"
+      :join('')
+      .. (is_terminal and "%#TabLine#%0@v:lua.buffer_add@ 󰐕 %T" or "")
+      .. "%#TabLineFill#"
   buf_to_delete = nil
   local tabpages = vim.api.nvim_list_tabpages()
   local tabpages = #tabpages > 1
@@ -94,4 +111,4 @@ function _G.tabline_normal()
   return buffers .. '%=' .. tabpages
 end
 
-vim.o.tabline = "%{%v:lua.tabline_normal()%}"
+vim.o.tabline = "%{%v:lua.tabline()%}"

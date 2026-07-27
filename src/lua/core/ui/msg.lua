@@ -160,7 +160,10 @@ local function update(id, content, kind, history)
     win = win,
     scope = "local",
   })
-  vim.api.nvim_set_option_value("statuscolumn", f("%#Diagnostic{}#{}", kind_bg, header), { win = win })
+  vim.api.nvim_set_option_value("statuscolumn", f("%#Diagnostic{}#{}", kind_bg, header), {
+    win = win,
+    scope = "local",
+  })
 
   local timer = assert(vim.uv.new_timer())
   timer:start(timeout, 0, function()
