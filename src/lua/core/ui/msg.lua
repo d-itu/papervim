@@ -1,5 +1,6 @@
 local utils = require "core.ui.utils"
 local f = require "core.format"
+local group = require "core.augroup"
 
 local showcmd = ""
 
@@ -48,6 +49,30 @@ local bg = {
   wmsg = "Warn",
   progress = "Ok"
 }
+
+local function set_highlights()
+  for _, type in ipairs { "Error", "Warn", "Info", "Hint", "Ok" } do
+    local vt = vim.api.nvim_get_hl(0, { name = "DiagnosticVirtualText" .. type, link = false })
+    if vt.fg and vt.bg then
+      vim.api.nvim_set_hl(0, "Msg" .. type, { fg = vt.fg, bg = vt.bg })
+    else
+      local hl = vim.api.nvim_get_hl(0, { name = "Diagnostic" .. type, link = false })
+      local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+      local bg
+      if normal.bg and hl.fg then
+        bg = utils.mix(normal.bg, hl.fg, 0.1)
+      end
+      vim.api.nvim_set_hl(0, "Msg" .. type, { fg = hl.fg, bg = bg })
+    end
+  end
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = set_highlights,
+  group = group,
+  desc = "ui highlights",
+})
+set_highlights()
 
 local header = "▌"
 local header_width = vim.fn.strdisplaywidth(header)
@@ -156,7 +181,7 @@ local function update(id, content, kind, history)
     zindex = 300,
   })
   local kind_bg = bg[kind] or (history and "Info" or "Hint")
-  vim.api.nvim_set_option_value("winhighlight", "Normal:DiagnosticVirtualText" .. kind_bg, {
+  vim.api.nvim_set_option_value("winhighlight", "Normal:Msg" .. kind_bg, {
     win = win,
     scope = "local",
   })
@@ -188,7 +213,7 @@ vim.api.nvim_create_autocmd("OptionSet", {
       vim.api.nvim_buf_del_extmark(search_count_buf, utils.ns, search_count)
     end
   end,
-  group = require "core.augroup"
+  group = group,
 })
 
 return {
@@ -206,7 +231,7 @@ return {
         vim.go.hlsearch = true
         search_count_buf = vim.api.nvim_get_current_buf()
         search_count = vim.api.nvim_buf_set_extmark(0, utils.ns, vim.api.nvim_win_get_cursor(0)[1] - 1, 0, {
-          virt_text = { { content[1][2], { "DiagnosticVirtualTextInfo" } } },
+          virt_text = { { content[1][2], { "MsgInfo" } } },
           id = search_count
         })
       end)
@@ -257,7 +282,7 @@ return {
           virt_text_pos = "right_align",
         })
         cursor.render(content)
-        cursor.append("\n")
+        cursor.append "\n"
         ::continue::
       end
       vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
