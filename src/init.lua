@@ -1,8 +1,17 @@
+require "core.colorscheme"
 require "core.ui"
 require "core.options"
 require "core.mapping"
 require "core.autocmd"
 require "core.colorscheme"
+require "core.lsp"
+
+vim.filetype.add {
+  extension = {
+    nisba = 'nisba',
+    ll = 'llvm',
+  },
+}
 
 local group = require "core.augroup"
 
@@ -20,7 +29,6 @@ local function lazy(event, callback, pattern)
 end
 
 lazy('FileType', function()
-  require 'plugins.lsp'
   require 'plugins.dropbar'
 end)
 

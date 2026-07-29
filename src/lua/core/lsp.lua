@@ -68,6 +68,26 @@ vim.lsp.config.rust_analyzer = {
     },
   },
 }
+vim.lsp.config.ts_ls = {
+  init_options = {
+    plugins = {
+      {
+        name = '@vue/typescript-plugin',
+        location = '/usr/lib/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin',
+        languages = { 'typescript', 'javascript', 'vue' },
+      },
+    },
+  },
+  filetypes = {
+    'javascript',
+    'javascriptreact',
+    'javascript.jsx',
+    'typescript',
+    'typescriptreact',
+    'typescript.tsx',
+    'vue',
+  },
+}
 
 local hl_map = require 'core.diagnostic_hl'
 
@@ -183,22 +203,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.lsp.log.set_level 'OFF'
     vim.lsp.inlay_hint.enable(true)
     vim.lsp.inline_completion.enable(true);
-
-    -- escape sequence highlight
-    vim.api.nvim_set_hl(0, '@lsp.type.string.rust', { default = true })
-    vim.api.nvim_set_hl(0, '@lsp.type.string.python', { default = true })
-
-    ---@return vim.api.keyset.get_hl_info
-    local function query_hl(name) return vim.api.nvim_get_hl(0, { name = name, link = false }) end
-
-    local function_hl = query_hl("@function")
-    vim.api.nvim_set_hl(0, '@lsp.typemod.operator.userDefined', { fg = function_hl.fg, default = true })
-    vim.api.nvim_set_hl(0, '@lsp.type.concept', { fg = function_hl.fg, default = true })
-    vim.api.nvim_set_hl(0, '@lsp.type.escapeSequence', { underline = true, default = true })
-    vim.api.nvim_set_hl(0, '@lsp.typemod.variable.mutable', { underline = true, default = true })
-
-    -- rust trait
-    vim.api.nvim_set_hl(0, '@lsp.type.interface.rust', { link = "@lsp.type.concept", default = true })
 
     local diagnostic_signs = require "core.diagnostic_signs"
     vim.diagnostic.config {
