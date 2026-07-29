@@ -78,9 +78,9 @@ vim.api.nvim_create_autocmd("ModeChanged", {
 })
 
 local diff_hl = {
-  'DiagnosticOk',
-  'DiagnosticWarn',
-  'DiagnosticError',
+  'Added',
+  'Changed',
+  'Removed',
 }
 local diff_icons = {
   '',
