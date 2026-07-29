@@ -52,24 +52,6 @@ local function save_project(dir)
   })
 end
 
-vim.api.nvim_create_autocmd("SessionLoadPost", {
-  callback = function()
-    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-      if vim.api.nvim_get_option_value("buftype", { buf = buf }) ~= "" then goto continue end
-      local name = vim.api.nvim_buf_get_name(buf)
-      if vim.fn.filereadable(name) == 0 then
-        vim.api.nvim_buf_delete(buf, { force = true })
-        goto continue
-      end
-      local ft = vim.filetype.match { buf = buf }
-      if ft then
-        vim.api.nvim_set_option_value("filetype", ft, { buf = buf })
-      end
-      ::continue::
-    end
-  end,
-})
-
 ---@param manifest manifest
 ---@param session_dir string
 local function load_project(session_dir, manifest)
@@ -81,6 +63,20 @@ local function load_project(session_dir, manifest)
     for _, node in ipairs(manifest.expanded_nodes) do
       instance.state.meta[node] = true
     end
+  end
+
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_get_option_value("buftype", { buf = buf }) ~= "" then goto continue end
+    local name = vim.api.nvim_buf_get_name(buf)
+    if vim.fn.filereadable(name) == 0 then
+      vim.api.nvim_buf_delete(buf, {})
+      goto continue
+    end
+    local ft = vim.filetype.match { buf = buf }
+    if ft then
+      vim.api.nvim_set_option_value("filetype", ft, { buf = buf })
+    end
+    ::continue::
   end
 end
 
@@ -192,33 +188,63 @@ end, {
   nargs = "*",
 })
 
-vim.o.sessionoptions = "curdir,folds,help,tabpages,winsize"
+vim.o.sessionoptions = "buffers,curdir,folds,help,tabpages,winsize"
+
+if vim.fn.argc() == 1 then
+  local path = vim.fn.argv()[1]
+  if vim.fn.isdirectory(path) == 1 then
+    vim.api.nvim_set_current_dir(path)
+  else
+    local dir = vim.fs.dirname(path)
+    if vim.fn.isdirectory(dir) == 1 then
+      vim.api.nvim_set_current_dir(dir)
+    end
+  end
+end
 
 local group = require "core.augroup"
+
+---@param dir string
+local function on_dir_changed(dir)
+  if vim.v.this_session ~= "" then return end
+
+  vim.api.nvim_create_autocmd("VimLeavePre", {
+    group = group,
+    callback = function()
+      local cwd = vim.fn.getcwd(-1, -1)
+      if vim.fn.isdirectory(cwd .. "/.git") == 1 then
+        save_project(cwd)
+      end
+    end,
+    desc = "save project",
+  })
+
+  local session_dir = get_session_dir(dir)
+
+  local manifest = io.open(session_dir .. "/manifest.json")
+  if not manifest then return end
+  local manifest = manifest_decode(manifest:read "*a")
+  if not manifest then return end
+
+  load_project(session_dir, manifest)
+end
+
+local path = vim.fn.expand "%"
+if vim.fn.isdirectory(path) == 1 then
+  vim.api.nvim_set_current_dir(path)
+  on_dir_changed(path)
+else
+  local dir = vim.fs.dirname(path)
+  if vim.fn.isdirectory(dir) == 1 then
+    vim.api.nvim_set_current_dir(dir)
+  end
+end
+
 vim.api.nvim_create_autocmd("DirChanged", {
   pattern = "global",
   group = group,
   callback = function(arg)
-    vim.api.nvim_create_autocmd("VimLeavePre", {
-      group = group,
-      callback = function()
-        if vim.fn.isdirectory(arg.file .. "/.git") == 1 then
-          save_project(arg.file)
-        end
-      end,
-      desc = "save project",
-    })
-
-    if vim.v.this_session ~= "" then return end
-
-    local session_dir = get_session_dir(arg.file)
-
-    local manifest = io.open(session_dir .. "/manifest.json")
-    if not manifest then return end
-    local manifest = manifest_decode(manifest:read "*a")
-    if not manifest then return end
-
-    load_project(session_dir, manifest)
+    on_dir_changed(arg.file)
   end,
   desc = "load project",
 })

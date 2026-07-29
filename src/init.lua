@@ -2,7 +2,6 @@ require "core.ui"
 require "core.options"
 require "core.mapping"
 require "core.autocmd"
-require "core.session"
 require "core.colorscheme"
 
 local group = require "core.augroup"
@@ -56,21 +55,9 @@ lazy("UIEnter", function()
   require "plugins.which-key"
 end)
 
-if vim.fn.argc() == 1 then
-  local path = vim.fn.argv()[1]
-  if vim.fn.isdirectory(path) == 1 then
-    vim.api.nvim_set_current_dir(path)
-  else
-    local dir = vim.fs.dirname(path)
-    if vim.fn.isdirectory(dir) == 1 then
-      vim.api.nvim_set_current_dir(dir)
-    end
-  end
-end
-
-vim.filetype.add {
-  extension = {
-    nisba = 'nisba',
-    ll = 'llvm',
-  },
-}
+require "core.ui"
+require "core.options"
+require "core.mapping"
+require "core.autocmd"
+require "core.lsp"
+require "core.session"
