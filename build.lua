@@ -81,6 +81,7 @@ cp target/native/libblink_cmp_fuzzy.so lib/libblink_cmp_fuzzy.so
     'kotlin',
     'llvm',
     'lua',
+    'luadoc',
     'make',
     'markdown',
     'markdown_inline',
