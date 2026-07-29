@@ -37,6 +37,18 @@ fyler.setup {
       enabled = true,
     },
   },
+  hooks = {
+    on_highlight = function(hl)
+      hl.FylerDirectoryName = { link = "Directory", default = true }
+
+      hl.FylerGitConflict   = { link = "Removed", default = true }
+      hl.FylerGitDeleted    = { link = "Removed", default = true }
+      hl.FylerGitModified   = { link = "Changed", default = true } -- *
+      hl.FylerGitRenamed    = { link = "Changed", default = true }
+      hl.FylerGitStaged     = { link = "Added", default = true }
+      hl.FylerGitUntracked  = { link = "Added", default = true } -- ?
+    end
+  },
   kind = "split_left_most",
   kind_presets = {
     split_left_most = {
