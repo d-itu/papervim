@@ -43,6 +43,11 @@ fyler.setup {
       width = 32,
     }
   },
+  win_opts = {
+    spell = false,
+    cursorline = true,
+    winbar = " %#FylerWinBar#%{v:lua.fyler_path()}",
+  },
   mappings = {
     n = {
       ['<BS>'] = {
@@ -78,16 +83,4 @@ fyler.setup {
     indent_guides = true,
   },
 }
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "fyler_finder",
-  callback = function()
-    vim.wo.spell = false
-    vim.wo.cursorline = true
-    vim.wo.winbar = " %#FylerWinBar#%{v:lua.fyler_path()}"
-    -- TODO: dim background
-    -- vim.wo.winhighlight = "Normal:FylerNormal"
-  end,
-  group = require "core.augroup",
-})
 vim.keymap.set("n", "\\e", fyler.toggle, { desc = "Toggle Explorer" })
