@@ -4,17 +4,17 @@ local f = require 'core.format'
 local group = require 'core.augroup'
 
 local hl_from_mode = {
-  n = { 'PVModeNormal', 'Function', },
-  i = { 'PVModeInsert', 'String', },
-  v = { 'PVModeVisual', 'Keyword', },
-  V = { 'PVModeVisualLine', 'Include', },
-  t = { 'PVModeTerminal', 'Label', },
-  c = { 'PVModeCmdline', 'Constant', },
-  R = { 'PVModeReplace', '@variable.builtin', },
+  n = { 'PVModeNormal', '@function', },
+  i = { 'PVModeInsert', '@string', },
+  v = { 'PVModeVisual', '@keyword', },
+  V = { 'PVModeVisualLine', '@keyword.import', },
+  t = { 'PVModeTerminal', '@label', },
+  c = { 'PVModeCmdline', '@macro', },
+  R = { 'PVModeReplace', '@constant', },
   r = { 'PVModePrompt', '@macro', },
-  s = { 'PVModeSelect', '@lsp.type.interface', },
-  S = { 'PVModeSelectLine', '@punctuation', },
-  [''] = { 'PVModeVisualBlock', '@variable.parameter', },
+  s = { 'PVModeSelect', '@type', },
+  S = { 'PVModeSelectLine', '@type', },
+  [''] = { 'PVModeVisualBlock', '@keyword.import', },
   [''] = { 'PVModeSelectBlock', '@class', },
 }
 
@@ -26,15 +26,14 @@ local function set_mode_colors()
       bg = vim.api.nvim_get_hl(0, { name = template, link = false }).fg,
     })
   end
-  vim.api.nvim_set_hl(0, 'Mode', {
+  vim.api.nvim_set_hl(0, 'PVMode', {
     link = hl_from_mode[vim.fn.mode()][1] or "StatusLine"
   })
 end
 
 vim.api.nvim_create_autocmd('ModeChanged', {
   callback = function()
-    vim.api.nvim_set_hl(0, 'Mode', {
-      ---@diagnostic disable-next-line: undefined-field
+    vim.api.nvim_set_hl(0, 'PVMode', {
       link = hl_from_mode[vim.fn.mode()][1] or "StatusLine"
     })
   end,
@@ -117,7 +116,7 @@ function _G.message()
 end
 
 vim.o.statusline = table.concat {
-  "%#Mode#  ",
+  "%#PVMode#  ",
   "%#StatusLine#%{v:lua.branch()}",
   "%<",
   "%{%v:lua.vim.diagnostic.status()%}",
