@@ -54,15 +54,13 @@ local symbols_ext = {
   Table = '󰅩 ',
   Terminal = ' ',
   Type = ' ',
-  Variable = ' ',
   WhileStatement = '󰑖 ',
 }
 
 vim.api.nvim_create_autocmd("OptionSet", {
   pattern = "modified",
   callback = function()
-    if vim.api.nvim_buf_get_name(0) == ''
-        and not vim.bo.modified then
+    if vim.api.nvim_buf_get_name(0) == '' and not vim.bo.modified then
       vim.wo.winbar = ""
     end
   end,
