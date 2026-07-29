@@ -49,7 +49,7 @@ return {
     if firstc == ":" then
       vim.api.nvim_set_option_value("filetype", "vim", { buf = buf })
       local text = utils.concat_content(content)
-      local is_lua = text:match "%s*lua%s+" or text:match "%s*="
+      local is_lua = text:match "^%s*lua%s+" or text:match "^%s*luado%s+" or text:match "^%s*="
       prompt_virt_text = { is_lua and { "  ", "MiniIconsGreen" } or { "  ", "MiniIconsCyan" } }
     elseif firstc == "=" then
       vim.api.nvim_set_option_value("filetype", "vim", { buf = buf })
