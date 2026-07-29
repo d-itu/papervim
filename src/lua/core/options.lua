@@ -64,7 +64,7 @@ vim.o.spelloptions = "noplainbuffer,camel"
 vim.o.updatetime = 1
 
 function _G.pad()
-  if vim.bo.buftype == "" then return ' ' end
+  if vim.wo.number or vim.wo.relativenumber then return ' ' end
   return ""
 end
 
