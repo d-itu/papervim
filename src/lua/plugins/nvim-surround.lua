@@ -1,14 +1,16 @@
 vim.cmd.packadd "nvim-surround"
 
 require "nvim-surround".setup {
-  ["("] = {
-    add = { "( ", " )" },
-  },
-  ["["] = {
-    add = { "[ ", " ]" },
-  },
-  ["<"] = {
-    add = { "< ", " >" },
+  surrounds = {
+    ["("] = {
+      add = { "(", ")" },
+    },
+    ["["] = {
+      add = { "[", "]" },
+    },
+    ["<"] = {
+      add = { "<", ">" },
+    },
   },
 }
 
