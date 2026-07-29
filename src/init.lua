@@ -13,6 +13,8 @@ vim.filetype.add {
   },
 }
 
+vim.treesitter.language.register("bash", "sh")
+
 local group = require "core.augroup"
 
 ---@param event vim.api.keyset.events|vim.api.keyset.events[]
