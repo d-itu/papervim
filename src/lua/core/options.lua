@@ -92,7 +92,7 @@ function _G.foldtext()
     chunks[i] = { text:sub(i, i), get_hl(vim.v.foldstart - 1, i - 1) }
   end
   table.insert(chunks, {
-    " ⋯ ", { "@comment", "Visual" }
+    " ⋯ ", { "@comment", "LspInlayHint" }
   })
   return chunks
 end

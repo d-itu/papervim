@@ -31,7 +31,8 @@ local specs = {
 
   -- colorschemes
   { src = "https://github.com/rose-pine/neovim", name = "rose-pine" },
-  "https://github.com/folke/tokyonight.nvim",
+  { src = "https://github.com/catppuccin/nvim",  name = "catppuccin" },
+  "https://github.com/rebelot/kanagawa.nvim",
 }
 
 local ffi = require "ffi"

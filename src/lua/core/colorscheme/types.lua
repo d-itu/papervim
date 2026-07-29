@@ -1,0 +1,126 @@
+---@alias color integer | string
+---@alias color.pair { fg: color, bg: color }
+
+---@class groups
+---@field search { fg: color?, bg: color }
+---@field cur_search { fg: color?, bg: color }
+---@field substitute { fg: color?, bg: color }
+---@field status_line { fg: color?, bg: color? }
+---@field status_line_nc { fg: color?, bg: color? }
+---@field win_bar { fg: color?, bg: color? }
+---@field win_bar_nc { fg: color?, bg: color? }
+---@field tabline { fg: color?, bg: color?, sel: color, fill: color }
+---@field match_paren vim.api.keyset.highlight
+---@field inlay_hint vim.api.keyset.highlight
+---@field todo vim.api.keyset.highlight
+---@field diff groups.diff
+---@field diagnostic groups.diagnostic
+---@field menu groups.menu
+---@field spell groups.spell
+---@field symbols groups.symbols
+---@field markup groups.markup
+---@field ansi color[]
+---@field colors groups.colors
+---@field fg groups.fg
+---@field bg groups.bg
+---@field custom table<string, vim.api.keyset.highlight>
+
+---@class groups.spell
+---@field bad color
+---@field cap color
+---@field rare color
+---@field local color
+
+---@class groups.diff
+---@field added color.pair
+---@field changed color.pair
+---@field removed color.pair
+
+---@class groups.diagnostic
+---@field error color.pair
+---@field warn color.pair
+---@field info color.pair
+---@field hint color.pair
+---@field ok color.pair
+
+---@class groups.menu
+---@field bg color
+---@field fg color?
+---@field kind color
+---@field extra color
+---@field match color
+---@field sel color
+---@field thumb color
+
+---@class groups.fg
+---@field normal color
+---@field inactive color
+---@field non_text color
+---@field special color
+---@field directory color
+---@field mode_msg color
+---@field more_msg color
+---@field question color
+---@field win_separator color
+---@field title color
+---@field cursor_line_nr color
+---@field border color
+
+---@class groups.bg
+---@field normal color
+---@field float color
+---@field shadow color
+---@field cursor_line color
+---@field visual color
+---@field lsp_reference color
+---@field cursor color
+---@field color_column color
+---@field title color
+
+---@class groups.markup
+---@field raw color
+---@field list color
+---@field checked color
+---@field unchecked color
+
+---@class groups.symbols
+---@field boolean vim.api.keyset.highlight
+---@field number vim.api.keyset.highlight
+---@field string vim.api.keyset.highlight
+---@field character vim.api.keyset.highlight
+---@field constant vim.api.keyset.highlight
+---@field label vim.api.keyset.highlight
+---@field keyword vim.api.keyset.highlight
+---@field macro vim.api.keyset.highlight
+---@field attribute vim.api.keyset.highlight
+---@field type vim.api.keyset.highlight
+---@field variable vim.api.keyset.highlight
+---@field function vim.api.keyset.highlight
+---@field member vim.api.keyset.highlight
+---@field parameter vim.api.keyset.highlight
+---@field tag vim.api.keyset.highlight
+---@field comment vim.api.keyset.highlight
+---@field operator vim.api.keyset.highlight
+---@field delimiter vim.api.keyset.highlight
+---@field constructor vim.api.keyset.highlight
+---@field module vim.api.keyset.highlight
+---@field path vim.api.keyset.highlight
+---@field concept vim.api.keyset.highlight
+---@field lifetime vim.api.keyset.highlight
+---@field component vim.api.keyset.highlight
+---@field escape vim.api.keyset.highlight
+---@field regex vim.api.keyset.highlight
+---@field self vim.api.keyset.highlight
+---@field self_type vim.api.keyset.highlight
+
+---@class groups.colors
+---@field white color
+---@field red color
+---@field orage color
+---@field yellow color
+---@field green color
+---@field blue color
+---@field azure color
+---@field cyan color
+---@field purple color
+---@field grey color

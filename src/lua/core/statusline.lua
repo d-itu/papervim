@@ -24,6 +24,7 @@ local function set_mode_colors()
     vim.api.nvim_set_hl(0, name, {
       fg = vim.api.nvim_get_hl(0, { name = 'StatusLine', link = false }).bg,
       bg = vim.api.nvim_get_hl(0, { name = template, link = false }).fg,
+      default = true,
     })
   end
   vim.api.nvim_set_hl(0, 'PVMode', {
@@ -44,6 +45,7 @@ local function on_hl()
   set_mode_colors()
   vim.api.nvim_set_hl(0, "PVShowCmd", {
     fg = vim.api.nvim_get_hl(0, { name = "@function", link = false }).fg,
+    default = true,
     italic = true,
   })
 end
@@ -62,19 +64,6 @@ function _G.branch()
   end
   return ""
 end
-
----@type integer?
-local line_count_cb
-vim.api.nvim_create_autocmd("ModeChanged", {
-  pattern = "[vV]*:[^vV]*",
-  callback = function()
-    if line_count_cb then
-      vim.api.nvim_del_autocmd(line_count_cb)
-      line_count_cb = nil
-    end
-  end,
-  group = group,
-})
 
 local diff_hl = {
   'Added',

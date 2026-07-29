@@ -1,20 +1,3 @@
-require "core.colorscheme"
-require "core.ui"
-require "core.options"
-require "core.mapping"
-require "core.autocmd"
-require "core.colorscheme"
-require "core.lsp"
-
-vim.filetype.add {
-  extension = {
-    nisba = 'nisba',
-    ll = 'llvm',
-  },
-}
-
-vim.treesitter.language.register("bash", "sh")
-
 local group = require "core.augroup"
 
 ---@param event vim.api.keyset.events|vim.api.keyset.events[]
@@ -29,6 +12,24 @@ local function lazy(event, callback, pattern)
     desc = "lazy load"
   })
 end
+
+lazy("ColorSchemePre", function()
+  require "plugins.catppuccin"
+  vim.cmd.packadd "kanagawa.nvim"
+  require "plugins.rose-pine"
+end)
+
+vim.cmd.colorscheme "fruitparade"
+
+vim.filetype.add {
+  extension = {
+    nisba = 'nisba',
+    ll = 'llvm',
+  },
+}
+
+vim.treesitter.language.register("bash", "sh")
+vim.treesitter.language.register("json", "jsonc")
 
 lazy('FileType', function()
   require 'plugins.dropbar'

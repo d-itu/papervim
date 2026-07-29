@@ -78,6 +78,39 @@ end
 
 local confirm_msg = nil
 
+---@param x integer
+---@param y integer
+---@param t integer
+local mix = function(x, y, t)
+  local r1 = bit.band(bit.rshift(x, 16), 0xFF)
+  local g1 = bit.band(bit.rshift(x, 8), 0xFF)
+  local b1 = bit.band(x, 0xFF)
+
+  local r2 = bit.band(bit.rshift(y, 16), 0xFF)
+  local g2 = bit.band(bit.rshift(y, 8), 0xFF)
+  local b2 = bit.band(y, 0xFF)
+
+  local r = math.floor(r1 + (r2 - r1) * t)
+  local g = math.floor(g1 + (g2 - g1) * t)
+  local b = math.floor(b1 + (b2 - b1) * t)
+
+  return bit.bor(
+    0,
+    bit.lshift(r, 16),
+    bit.lshift(g, 8),
+    b
+  )
+end
+
+---@param color color
+---@return integer
+local function color_to_integer(color)
+  if type(color) == 'string' then
+    return assert(tonumber("0x" .. color:match "%x+"))
+  end
+  return color
+end
+
 return {
   ---@param content content_entry[]
   ---@return string
@@ -97,4 +130,13 @@ return {
       return res
     end,
   },
+
+  mix = mix,
+
+  ---@param x color
+  ---@param y color
+  ---@param t integer
+  mix_color = function(x, y, t)
+    return mix(color_to_integer(x), color_to_integer(y), t)
+  end
 }
