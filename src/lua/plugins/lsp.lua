@@ -137,12 +137,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
     local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
 
-    vim.api.nvim_set_hl(0, '@lsp.type.string.rust', {})
-    vim.api.nvim_set_hl(0, '@lsp.type.string.python', {})
-    vim.api.nvim_set_hl(0, '@lsp.type.string.zig', {})
-    vim.api.nvim_set_hl(0, '@lsp.typemod.operator.userDefined', { link = "@function" })
-    vim.api.nvim_set_hl(0, '@lsp.type.interface.rust', { link = "@lsp.type.concept" })
-
     if client:supports_method('textDocument/foldingRange') then
       vim.o.foldmethod = "expr"
       vim.wo.foldexpr = 'v:lua.vim.lsp.foldexpr()'
@@ -189,6 +183,22 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.lsp.log.set_level 'OFF'
     vim.lsp.inlay_hint.enable(true)
     vim.lsp.inline_completion.enable(true);
+
+    -- escape sequence highlight
+    vim.api.nvim_set_hl(0, '@lsp.type.string.rust', { default = true })
+    vim.api.nvim_set_hl(0, '@lsp.type.string.python', { default = true })
+
+    ---@return vim.api.keyset.get_hl_info
+    local function query_hl(name) return vim.api.nvim_get_hl(0, { name = name, link = false }) end
+
+    local function_hl = query_hl("@function")
+    vim.api.nvim_set_hl(0, '@lsp.typemod.operator.userDefined', { fg = function_hl.fg, default = true })
+    vim.api.nvim_set_hl(0, '@lsp.type.concept', { fg = function_hl.fg, default = true })
+    vim.api.nvim_set_hl(0, '@lsp.type.escapeSequence', { underline = true, default = true })
+    vim.api.nvim_set_hl(0, '@lsp.typemod.variable.mutable', { underline = true, default = true })
+
+    -- rust trait
+    vim.api.nvim_set_hl(0, '@lsp.type.interface.rust', { link = "@lsp.type.concept", default = true })
 
     local diagnostic_signs = require "core.diagnostic_signs"
     vim.diagnostic.config {

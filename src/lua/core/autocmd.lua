@@ -36,6 +36,7 @@ vim.api.nvim_create_autocmd('FileType', {
   group = group,
   callback = function()
     if not pcall(vim.treesitter.start) then return end
+
     local lang = vim.treesitter.language.get_lang(vim.bo.filetype)
     if not lang then return end
     if vim.treesitter.query.get(lang, "folds") then
