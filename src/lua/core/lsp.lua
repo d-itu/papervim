@@ -209,7 +209,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
       signs = {
         text = { '', '', '', '' },
       },
-      virtual_text = {},
+      virtual_text = {
+        prefix = '',
+      },
       severity_sort = true,
       status = {
         format = function(counts)
