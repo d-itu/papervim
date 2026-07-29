@@ -61,6 +61,18 @@ local function float(buf)
     once = true,
     buf = buf,
   })
+  vim.api.nvim_create_autocmd("VimResized", {
+    callback = function()
+      vim.api.nvim_win_set_config(win, {
+        relative = "editor",
+        width = math.ceil(vim.go.columns * (1 - 2 * margin)),
+        height = math.ceil(vim.go.lines * (1 - 2 * margin)),
+        col = math.floor(vim.go.columns * margin),
+        row = math.floor(vim.go.lines * margin),
+      })
+    end,
+    buf = buf,
+  })
   return buf, win
 end
 
