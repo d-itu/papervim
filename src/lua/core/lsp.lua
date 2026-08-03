@@ -133,6 +133,24 @@ local function max_severity(count)
   end
 end
 
+---@param range lsp.Range
+---@param row integer
+---@param col integer
+---@return boolean
+local function range_contains(range, row, col)
+  if range.start.line ~= range["end"].line then
+    return row == range.start.line and col >= range.start.character
+  end
+  return row == range.start.line and col >= range.start.character and col < range["end"].character
+end
+
+---@param client vim.lsp.Client
+---@param cb fun(references: lsp.DocumentHighlight[]?)
+local function document_highlight(client, cb)
+  local params = vim.lsp.util.make_position_params(0, client.offset_encoding)
+  client:request('textDocument/documentHighlight', params, function(_, result) cb(result) end)
+end
+
 local group = require "core.augroup"
 
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -163,16 +181,37 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 
     if client:supports_method('textDocument/documentHighlight') then
-      vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+      local current_word_range
+
+      vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = vim.api.nvim_create_augroup("doc_hl" .. args.buf, { clear = true }),
         buffer = args.buf,
-        callback = vim.lsp.buf.document_highlight,
-        desc = "set document highlight",
-      })
-      vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-        group = vim.api.nvim_create_augroup("doc_hl_clear" .. args.buf, { clear = true }),
-        buffer = args.buf,
-        callback = vim.lsp.buf.clear_references,
+        callback = function()
+          local cursor = vim.api.nvim_win_get_cursor(0)
+          local row, col = cursor[1] - 1, cursor[2]
+          if current_word_range then
+            if range_contains(current_word_range, row, col) then return end
+            vim.lsp.buf.clear_references()
+            current_word_range = nil
+          end
+          document_highlight(client, function(references)
+            local word_range = nil
+            if references then
+              local cursor = vim.api.nvim_win_get_cursor(0)
+              local row, col = cursor[1] - 1, cursor[2]
+              for _, reference in ipairs(references) do
+                if range_contains(reference.range, row, col) then
+                  word_range = reference.range
+                  break
+                end
+              end
+              if word_range then
+                current_word_range = word_range
+                vim.lsp.util.buf_highlight_references(args.buf, references, client.offset_encoding)
+              end
+            end
+          end)
+        end,
         desc = "unset document highlight",
       })
     end
