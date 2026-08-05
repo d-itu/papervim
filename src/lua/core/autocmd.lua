@@ -154,3 +154,19 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   group = group,
   desc = "language specific highlight"
 })
+
+if vim.env.XDG_CURRENT_DESKTOP == "niri" then
+  vim.api.nvim_create_autocmd("ColorSchemePre", {
+    callback = function()
+      local client = vim.uv.new_pipe()
+      if not client then return end
+      client:connect(vim.env.NIRI_SOCKET, function(err)
+        if err then return end
+        client:write([[{"Action": { "DoScreenTransition": {} }}]] .. '\n')
+        client:close()
+      end)
+    end,
+    group = group,
+    desc = "niri screen transition"
+  })
+end
