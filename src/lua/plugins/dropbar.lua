@@ -1,7 +1,6 @@
 vim.cmd.packadd "dropbar.nvim"
 
-require "plugins.mini-icons"
-local mini_icons = require "mini.icons"
+local icons = require "core.icons"
 
 local group = require 'core.augroup'
 local symbols = require "core.symbols"
@@ -67,9 +66,7 @@ vim.api.nvim_create_autocmd("OptionSet", {
   group = group,
 })
 
-local disable_for_filetypes = {
-  "fzf",
-}
+local disable_for_filetypes = {}
 
 require 'dropbar'.setup {
   bar = {
@@ -98,14 +95,14 @@ require 'dropbar'.setup {
       ---@return string: icon for the directory
       ---@return string?: highlight group for the icon
       dir_icon = function(path)
-        local glyph, hl = mini_icons.get('directory', path)
+        local glyph, hl = icons.get('directory', path)
         return glyph .. ' ', hl
       end,
       ---@param path string path to the file
       ---@return string: icon for the file
       ---@return string?: highlight group for the icon
       file_icon = function(path)
-        local icon, hl = mini_icons.get('file', path)
+        local icon, hl = icons.get('file', path)
         return icon .. ' ', hl
       end,
       symbols = vim.tbl_extend('keep', vim.tbl_map(function(x) return x .. ' ' end, symbols.cmp.from_str), symbols_ext),

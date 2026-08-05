@@ -2,13 +2,17 @@ require "plugins.gitsigns"
 
 vim.cmd.packadd "nvim-scrollbar"
 require "scrollbar.handlers.gitsigns".setup()
----@diagnostic disable-next-line: undefined-field
 require "scrollbar".setup {
+  hide_if_all_visible = false,
+  handle = {
+    blend = 0,
+    highlight = "PmenuThumb",
+  },
   excluded_filetypes = {
     "fyler_finder",
-    "fzf",
   },
   excluded_buftypes = {
     "nofile",
+    "prompt"
   },
 }

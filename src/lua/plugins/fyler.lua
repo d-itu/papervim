@@ -1,15 +1,14 @@
 vim.cmd.packadd "fyler.nvim"
 
 require "plugins.mini-icons"
+local utils = require "core.utils"
 
 local fyler = require "fyler"
 
-local home = os.getenv "HOME"
 function _G.fyler_path()
   local url = vim.fn.expand "%"
   local path = url:sub(#"fyler-file://" + 1)
-  if home then path = path:gsub(home, "~") end
-  return path
+  return utils.substitute_home(path)
 end
 
 local function hl()

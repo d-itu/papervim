@@ -62,7 +62,6 @@ lazy("UIEnter", function()
   require "core.statusline"
   require "core.tabline"
 
-  require "plugins.fzf"
   require "plugins.which-key"
 end)
 
@@ -71,4 +70,5 @@ require "core.options"
 require "core.mapping"
 require "core.autocmd"
 require "core.lsp"
+require "core.picker"
 require "core.session"

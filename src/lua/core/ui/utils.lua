@@ -52,6 +52,7 @@ local function float(buf)
     row = math.floor(vim.go.lines * margin),
     style = "minimal",
   })
+  vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf })
   vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
   vim.api.nvim_buf_set_keymap(buf, "n", "", "<cmd>q<cr>", {})
   vim.api.nvim_create_autocmd("WinLeave", {

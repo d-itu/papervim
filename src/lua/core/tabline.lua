@@ -1,7 +1,5 @@
-require 'plugins.mini-icons'
-
 local f = require 'core.format'
-local mini_icon = require "mini.icons"
+local mini_icon = require "core.icons"
 local terminal = require "core.terminal"
 
 function _G.buffer_add()

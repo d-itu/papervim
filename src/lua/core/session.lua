@@ -104,19 +104,6 @@ local function list_projects()
 end
 
 ---@param dir string
----@return integer
-local function preview(dir)
-  local buf = vim.api.nvim_create_buf(false, true)
-  local session_dir = get_session_dir(dir)
-  local filename = session_dir .. "/Session.vim"
-  vim.api.nvim_buf_set_name(buf, filename)
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.fn.readfile(filename))
-  vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
-
-  return buf
-end
-
----@param dir string
 local function inspect(dir)
   vim.cmd.edit(get_session_dir(dir) .. "/Session.vim")
 end
@@ -158,9 +145,17 @@ local function select_project(action)
   local on_choice = f
       and function(dir) if dir then f(dir) end end
       or vim.print
+
+  local ui = require "core.picker.ui"
+
   vim.ui.select(list_projects(), {
     prompt = action .. " session: ",
-    preview_item = function(dir) return { buf = preview(dir) } end
+    format_item = require "core.utils".substitute_home,
+    preview_item = function(dir)
+      return {
+        buf = ui.preview_file(get_session_dir(dir) .. "/Session.vim", "vim")
+      }
+    end
   }, on_choice)
 end
 

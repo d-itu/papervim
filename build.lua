@@ -13,7 +13,6 @@ local specs = {
   "https://github.com/folke/which-key.nvim",
   "https://github.com/petertriho/nvim-scrollbar",
   "https://github.com/d-itu/indentify",
-  "https://github.com/ibhagwan/fzf-lua",
   "https://github.com/lewis6991/gitsigns.nvim",
   "https://github.com/meanderingprogrammer/render-markdown.nvim",
 
@@ -27,7 +26,6 @@ local specs = {
   "https://github.com/nvim-mini/mini.icons",
   "https://github.com/saghen/blink.lib",
   "https://github.com/d-itu/lua-format",
-  "https://github.com/folke/snacks.nvim", -- for fzf image preview
 
   -- colorschemes
   { src = "https://github.com/rose-pine/neovim", name = "rose-pine" },
