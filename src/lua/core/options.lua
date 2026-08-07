@@ -57,6 +57,7 @@ vim.opt.whichwrap:append "<,>,[,],h,l"
 
 vim.o.undofile = true
 vim.o.swapfile = false
+vim.opt.shada = { '!', "'0", "<0", "@0", "h", "r/tmp/", "r/private/" }
 
 vim.o.spell = true
 vim.o.spelloptions = "noplainbuffer,camel"
