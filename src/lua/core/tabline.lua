@@ -15,8 +15,11 @@ end
 ---@param button 'l' | 'm' | 'r'
 function _G.buffer_click(buf, _, button)
   if button == 'l' then
-    vim.api.nvim_win_set_buf(0, buf)
-  elseif button == 'r' and buf ~= vim.api.nvim_get_current_buf() then
+    pcall(vim.api.nvim_win_set_buf, 0, buf)
+  elseif button == 'r' then
+    if buf == vim.api.nvim_get_current_buf() then
+      return require "core.close_buf"()
+    end
     local ok = pcall(vim.api.nvim_buf_delete, buf, {})
     if not ok then
       vim.api.nvim_echo({ { vim.v.errmsg } }, true, { err = true })
@@ -27,7 +30,7 @@ end
 
 ---@param tab integer
 function _G.tabpage_click(tab)
-  -- vim.api.nvim_set_current_tabpage(tab)
+  vim.api.nvim_set_current_tabpage(tab)
 end
 
 ---@alias diag_count table<vim.diagnostic.Severity, integer>
