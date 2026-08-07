@@ -8,11 +8,10 @@ local specs = {
   "https://github.com/milanglacier/minuet-ai.nvim",
 
   -- ui
+  "https://github.com/d-itu/indentify",
   "https://github.com/FylerOrg/fyler.nvim",
   "https://github.com/Bekaboo/dropbar.nvim",
   "https://github.com/folke/which-key.nvim",
-  "https://github.com/petertriho/nvim-scrollbar",
-  "https://github.com/d-itu/indentify",
   "https://github.com/lewis6991/gitsigns.nvim",
   "https://github.com/meanderingprogrammer/render-markdown.nvim",
 

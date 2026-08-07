@@ -53,7 +53,6 @@ lazy("BufEnter", function()
   vim.api.nvim_exec_autocmds('BufEnter', {})
 
   require 'plugins.nvim-surround'
-  require 'plugins.nvim-scrollbar'
   require 'plugins.babel'
   require 'plugins.indentify'
 end)

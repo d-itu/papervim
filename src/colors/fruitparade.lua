@@ -99,7 +99,7 @@ require "core.colorscheme".set_hl {
     extra = non_text,
     match = palette.peach,
     sel = virtual_text,
-    thumb = bg.cursor_line,
+    thumb = virtual_text,
   },
   spell = {
     bad = palette.grey,
