@@ -96,7 +96,7 @@ local function show(args)
   }
 
   local function set_win_bar()
-    picker:winbar_show_flags {
+    picker:show_flags {
       hidden = args.hidden or false,
       ignored = args.ignored or false,
     }

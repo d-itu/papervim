@@ -1,9 +1,6 @@
 local group = require "core.augroup"
-local f = require "core.format"
 
 local ns = vim.api.nvim_create_namespace "picker"
-
-local margin = 0.08
 
 ---@class picker
 local picker = {}
@@ -18,112 +15,109 @@ local line_count = function(buf)
   return res
 end
 
----@param use_preview_win boolean
----@return integer left, integer top, integer width, integer height
-local function geometry(use_preview_win)
-  local left = math.floor(vim.go.columns * margin)
-  local top = math.floor(vim.go.lines * margin)
-  local width = math.ceil(vim.go.columns * (1 - 2 * margin) * (use_preview_win and 0.5 or 1))
-  local height = math.ceil(vim.go.lines * (1 - 2 * margin))
-  return left, top, width, height
-end
+local border = { "", "", "", "", " ", " ", " ", "" }
+
+local margin = 0.08
+
+---@class picker.rect
+---@field col integer
+---@field top integer
+---@field width integer
+---@field height integer
 
 ---@param opts picker.opts
 local function show(opts)
   local prompt = opts.prompt or "> "
 
-  local left, top, width, height = geometry(opts.use_preview_win)
+  ---@class picker
+  local this = setmetatable({}, picker)
+
+  local function make_config()
+    local left = math.floor(vim.go.columns * margin)
+    local top = math.floor(vim.go.lines * margin)
+    local width = math.ceil(vim.go.columns * (1 - 2 * margin) * (opts.use_preview_win and 0.5 or 1))
+    local height = math.ceil(vim.go.lines * (1 - 2 * margin))
+
+    return {
+      ---@type vim.api.keyset.win_config
+      prompt = {
+        relative = "editor",
+        width = width,
+        height = 1,
+        col = left,
+        row = top,
+        style = "minimal",
+      },
+      ---@type vim.api.keyset.win_config
+      list = {
+        relative = "editor",
+        width = width,
+        height = height - (this.use_footer and 2 or 1),
+        col = left,
+        row = top + 1,
+        style = "minimal",
+        border = this.use_footer and border or "none",
+      },
+      ---@type vim.api.keyset.win_config
+      preview = {
+        relative = "editor",
+        width = width,
+        height = height,
+        col = left + width,
+        row = top,
+        border = "none",
+      },
+    }
+  end
+
+  local configs = make_config()
 
   local prompt_buf = vim.api.nvim_create_buf(false, true)
   vim.fn.prompt_setprompt(prompt_buf, prompt)
   vim.bo[prompt_buf].bufhidden = "wipe"
   vim.bo[prompt_buf].buftype = "prompt"
-  local prompt_win = vim.api.nvim_open_win(prompt_buf, true, {
-    relative = "editor",
-    width = width,
-    height = 1,
-    col = left,
-    row = top,
-    style = "minimal",
-  })
+  local prompt_win = vim.api.nvim_open_win(prompt_buf, true, configs.prompt)
   vim.wo[prompt_win].winfixbuf = true
 
   local list_buf = vim.api.nvim_create_buf(false, true)
   vim.bo[list_buf].bufhidden = "wipe"
   vim.bo[list_buf].buftype = "nofile"
   vim.bo[list_buf].modifiable = false
-  local list_win = vim.api.nvim_open_win(list_buf, false, {
-    relative = "editor",
-    width = width,
-    height = height - 1,
-    col = left,
-    row = top + 1,
-    style = "minimal",
-  })
+  local list_win = vim.api.nvim_open_win(list_buf, false, configs.list)
   vim.wo[list_win].cursorline = true
   vim.wo[list_win].winfixbuf = true
-  vim.wo[list_win].winhighlight = "WinBar:NormalFloat,WinBarNC:NormalFloat"
+  vim.wo[list_win].winhighlight = "WinBar:NormalFloat,WinBarNC:NormalFloat,FloatBorder:NormalFloat"
 
   ---@type integer?
   local preview_win
   if opts.use_preview_win then
     local empty_buf = require "core.empty_buf"
-    preview_win = vim.api.nvim_open_win(empty_buf, false, {
-      title = "preview",
-      relative = "editor",
-      width = width,
-      height = height,
-      col = left + width,
-      row = top,
+    preview_win = vim.api.nvim_open_win(empty_buf, false, configs.preview)
+    vim.api.nvim_set_option_value('winhighlight', "WinBar:NormalFloat,WinBarNC:NormalFloat", {
+      win = preview_win,
+      scope = 'local',
     })
-    vim.wo[preview_win].winhighlight = "WinBar:NormalFloat,WinBarNC:NormalFloat"
   end
 
-  ---@class picker
-  local this = setmetatable({
-    prompt = {
-      buf = prompt_buf,
-      win = prompt_win,
-    },
-    list = {
-      buf = list_buf,
-      win = list_win,
-    },
-    preview_win = preview_win,
-    ---@private
-    callback = opts.on_choice,
-  }, picker)
+  this.prompt = {
+    buf = prompt_buf,
+    win = prompt_win,
+  }
+  this.list = {
+    buf = list_buf,
+    win = list_win,
+  }
+  this.preview_win = preview_win
+  this.done = false
+  this.on_choice = opts.on_choice
 
   local resize = vim.api.nvim_create_autocmd("VimResized", {
     group = group,
     callback = function()
-      local left, top, width, height = geometry(opts.use_preview_win)
-
-      vim.api.nvim_win_set_config(prompt_win, {
-        relative = "editor",
-        width = width,
-        height = 1,
-        col = left,
-        row = top,
-      })
-
-      vim.api.nvim_win_set_config(list_win, {
-        relative = "editor",
-        width = width,
-        height = height - 1,
-        col = left,
-        row = top + 1,
-      })
-
-      if preview_win then
-        vim.api.nvim_win_set_config(preview_win, {
-          relative = "editor",
-          width = width,
-          height = height,
-          col = left + width,
-          row = top,
-        })
-      end
+      local configs = make_config()
+      vim.api.nvim_win_set_config(prompt_win, configs.prompt)
+      vim.api.nvim_win_set_config(list_win, configs.list)
+      if preview_win then vim.api.nvim_win_set_config(preview_win, configs.preview) end
     end,
   })
 
@@ -132,11 +126,11 @@ local function show(opts)
     pattern = { tostring(prompt_win), tostring(list_win), tostring(preview_win) },
 
     callback = function()
-      vim.api.nvim_win_close(prompt_win, true)
-      vim.api.nvim_win_close(list_win, true)
+      pcall(vim.api.nvim_win_close, prompt_win, true)
+      pcall(vim.api.nvim_win_close, list_win, true)
       vim.api.nvim_del_autocmd(resize)
-      if preview_win then vim.api.nvim_win_close(preview_win, true) end
-      this.callback()
+      if preview_win then pcall(vim.api.nvim_win_close, preview_win, true) end
+      this:abort()
     end,
     once = true,
   })
@@ -221,16 +215,18 @@ function picker:selected()
 end
 
 function picker:confirm()
+  if self.done then return end
+  self.done = true
   local idx = self:selected()
-  vim.api.nvim_win_close(self.prompt.win, true)
-  self.callback(idx)
-  self.callback = function() end
+  pcall(vim.api.nvim_win_close, self.prompt.win, true)
+  self.on_choice(idx)
 end
 
 function picker:abort()
-  vim.api.nvim_win_close(self.prompt.win, true)
-  self.callback()
-  self.callback = function() end
+  if self.done then return end
+  self.done = true
+  pcall(vim.api.nvim_win_close, self.prompt.win, true)
+  self.on_choice()
 end
 
 function picker:get_input()
@@ -239,18 +235,34 @@ end
 
 ---@param virt_text [string, string | integer][]
 function picker:set_label(virt_text)
-  self.virt_text = vim.api.nvim_buf_set_extmark(self.prompt.buf, ns, 0, 0, {
+  self.label = vim.api.nvim_buf_set_extmark(self.prompt.buf, ns, 0, 0, {
     virt_text = virt_text,
     virt_text_pos = "eol_right_align",
-    id = self.virt_text,
+    id = self.label,
+    priority = 200,
   })
 end
 
 ---@param flags table<string, boolean>
-function picker:winbar_show_flags(flags)
-  vim.wo[self.list.win].winbar = "%=" .. vim.iter(pairs(flags)):map(function(name, value)
-    return f("%${}${}%#WinBar#", value and "MsgInfo" or "LspInlayHint", name)
-  end):join ' '
+function picker:show_flags(flags)
+  local spans = {}
+  for name, value in pairs(flags) do
+    table.insert(spans, { " " .. name .. " ", value and "MsgInfo" or "LspInlayHint" })
+    table.insert(spans, { " ", "NormalFloat" })
+  end
+  ---@type vim.api.keyset.win_config
+  local config = {
+    footer_pos = "center",
+    footer = spans,
+  }
+  if not self.use_footer then
+    config.height = vim.api.nvim_win_get_height(self.list.win) - 1
+    config.border = border
+
+    ---@private
+    self.use_footer = true
+  end
+  vim.api.nvim_win_set_config(self.list.win, config)
 end
 
 ---@alias picker.pair { index: integer, text: string }

@@ -1,4 +1,4 @@
-local ui       = require "core.picker.ui"
+local ui = require "core.picker.ui"
 
 ---@class picker.stream.basic.opts
 ---@field prompt string?
@@ -10,11 +10,11 @@ local ui       = require "core.picker.ui"
 ---@field cancel fun()
 
 ---@class picker.stream: picker
-local picker   = setmetatable({}, ui.picker)
+local picker = setmetatable({}, ui.picker)
 picker.__index = picker
 
 ---@param opts picker.stream.basic.opts
-local basic    = function(opts)
+local basic = function(opts)
   local serial = 0
 
   ---@param picker picker
@@ -59,7 +59,7 @@ end
 ---@field cancel fun()
 
 ---@param opts picker.stream.opts
-local show     = function(opts)
+local show = function(opts)
   local items = {}
 
   local init
