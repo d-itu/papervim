@@ -1,12 +1,13 @@
 local group = require "core.augroup"
+local f = require "core.format"
 
 local ns = vim.api.nvim_create_namespace "picker"
 
 local margin = 0.08
 
 ---@class picker
-local Picker = {}
-Picker.__index = Picker
+local picker = {}
+picker.__index = picker
 
 ---@param buf integer
 local line_count = function(buf)
@@ -28,11 +29,7 @@ local function geometry(use_preview_win)
 end
 
 ---@param opts picker.opts
-function Picker:new(opts)
-  ---@class picker
-  local instance = setmetatable({}, self)
-  local abort = true
-
+local function show(opts)
   local prompt = opts.prompt or "> "
 
   local left, top, width, height = geometry(opts.use_preview_win)
@@ -50,10 +47,6 @@ function Picker:new(opts)
     style = "minimal",
   })
   vim.wo[prompt_win].winfixbuf = true
-  instance.prompt = {
-    buf = prompt_buf,
-    win = prompt_win,
-  }
 
   local list_buf = vim.api.nvim_create_buf(false, true)
   vim.bo[list_buf].bufhidden = "wipe"
@@ -69,10 +62,7 @@ function Picker:new(opts)
   })
   vim.wo[list_win].cursorline = true
   vim.wo[list_win].winfixbuf = true
-  instance.list = {
-    buf = list_buf,
-    win = list_win,
-  }
+  vim.wo[list_win].winhighlight = "WinBar:NormalFloat,WinBarNC:NormalFloat"
 
   ---@type integer?
   local preview_win
@@ -88,7 +78,21 @@ function Picker:new(opts)
     })
     vim.wo[preview_win].winhighlight = "WinBar:NormalFloat,WinBarNC:NormalFloat"
   end
-  instance.preview_win = preview_win
+
+  ---@class picker
+  local this = setmetatable({
+    prompt = {
+      buf = prompt_buf,
+      win = prompt_win,
+    },
+    list = {
+      buf = list_buf,
+      win = list_win,
+    },
+    preview_win = preview_win,
+    ---@private
+    callback = opts.on_choice,
+  }, picker)
 
   local resize = vim.api.nvim_create_autocmd("VimResized", {
     group = group,
@@ -132,13 +136,13 @@ function Picker:new(opts)
       vim.api.nvim_win_close(list_win, true)
       vim.api.nvim_del_autocmd(resize)
       if preview_win then vim.api.nvim_win_close(preview_win, true) end
-      if abort then opts.on_choice() end
+      this.callback()
     end,
     once = true,
   })
 
   local function do_preview()
-    opts.preview(instance:selected(), preview_win)
+    opts.preview(this:selected(), preview_win)
   end
 
   vim.api.nvim_create_autocmd("CursorMoved", {
@@ -151,7 +155,7 @@ function Picker:new(opts)
     buf = prompt_buf,
     group = group,
     callback = function()
-      opts.on_input_changed(instance)
+      opts.on_input_changed(this)
     end,
   })
 
@@ -182,14 +186,13 @@ function Picker:new(opts)
   vim.api.nvim_buf_set_keymap(prompt_buf, "n", "<S-Tab>", "", { callback = prev })
   vim.api.nvim_buf_set_keymap(prompt_buf, "i", "<S-Tab>", "", { callback = prev })
 
-  do
-    local function abort()
-      vim.api.nvim_win_close(prompt_win, true)
-    end
+  local function abort() this:abort() end
+  local function confirm() this:confirm() end
 
-    vim.api.nvim_buf_set_keymap(prompt_buf, "n", "", "", { callback = abort, })
-    vim.api.nvim_buf_set_keymap(list_buf, "n", "", "", { callback = abort, })
-  end
+  vim.api.nvim_buf_set_keymap(prompt_buf, "n", "", "", { callback = abort, })
+  vim.api.nvim_buf_set_keymap(list_buf, "n", "", "", { callback = abort, })
+  vim.api.nvim_buf_set_keymap(prompt_buf, "n", "<CR>", "", { callback = confirm, })
+  vim.api.nvim_buf_set_keymap(list_buf, "n", "<CR>", "", { callback = confirm, })
 
   vim.api.nvim_create_autocmd("TextChangedI", {
     buf = prompt_buf,
@@ -205,32 +208,49 @@ function Picker:new(opts)
   })
 
   vim.fn.prompt_setcallback(prompt_buf, function()
-    abort = false
-    local idx = instance:selected()
-    vim.api.nvim_win_close(prompt_win, true)
-    return opts.on_choice(idx)
+    this:confirm()
   end)
 
   vim.cmd.startinsert()
 
-  return instance
+  return this
 end
 
-function Picker:selected()
+function picker:selected()
   return line_count(self.list.buf) ~= 0 and vim.api.nvim_win_get_cursor(self.list.win)[1] or nil
 end
 
-function Picker:get_input()
+function picker:confirm()
+  local idx = self:selected()
+  vim.api.nvim_win_close(self.prompt.win, true)
+  self.callback(idx)
+  self.callback = function() end
+end
+
+function picker:abort()
+  vim.api.nvim_win_close(self.prompt.win, true)
+  self.callback()
+  self.callback = function() end
+end
+
+function picker:get_input()
   return vim.fn.prompt_getinput(self.prompt.buf)
 end
 
 ---@param virt_text [string, string | integer][]
-function Picker:set_label(virt_text)
+function picker:set_label(virt_text)
   self.virt_text = vim.api.nvim_buf_set_extmark(self.prompt.buf, ns, 0, 0, {
     virt_text = virt_text,
     virt_text_pos = "eol_right_align",
     id = self.virt_text,
   })
+end
+
+---@param flags table<string, boolean>
+function picker:winbar_show_flags(flags)
+  vim.wo[self.list.win].winbar = "%=" .. vim.iter(pairs(flags)):map(function(name, value)
+    return f("%${}${}%#WinBar#", value and "MsgInfo" or "LspInlayHint", name)
+  end):join ' '
 end
 
 ---@alias picker.pair { index: integer, text: string }
@@ -250,7 +270,8 @@ end
 ---@field use_preview_win? boolean
 
 return {
-  picker = Picker,
+  picker = picker,
+  show = show,
   ---@param name string
   ---@param filetype? string
   ---@return integer
@@ -260,7 +281,8 @@ return {
     local buf = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf })
     vim.api.nvim_buf_set_name(buf, name)
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.fn.readfile(name))
+    -- TODO: binary file
+    pcall(vim.api.nvim_buf_set_lines, buf, 0, -1, false, vim.fn.readfile(name))
     vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
 
     local ft = filetype or vim.filetype.match { buf = buf }

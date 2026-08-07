@@ -53,7 +53,7 @@ local function show(items, opts)
 
   local filtered = fuzzy_items
 
-  ui.picker:new {
+  ui.show {
     prompt = opts.prompt,
     use_preview_win = opts.use_preview_win,
     on_choice = function(idx)
