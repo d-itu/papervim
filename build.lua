@@ -85,6 +85,7 @@ cp target/release/libblink_cmp_fuzzy.so lib/libblink_cmp_fuzzy.so
     'markdown_inline',
     'meson',
     'nisba',
+    'nix',
     'objdump',
     'odin',
     'proto',
@@ -102,6 +103,7 @@ cp target/release/libblink_cmp_fuzzy.so lib/libblink_cmp_fuzzy.so
     'yaml',
     'yuck',
     'zig',
+    'zsh',
   }
   vim.api.nvim_create_autocmd("User", {
     pattern = "TSUpdate",

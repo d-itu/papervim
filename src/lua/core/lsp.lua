@@ -60,7 +60,8 @@ vim.lsp.config.rust_analyzer = {
   settings = {
     ['rust-analyzer'] = {
       check = {
-        command = "clippy"
+        command = "clippy",
+        extraArgs = { "--no-deps" },
       },
       cargo = {
         features = "all",
@@ -121,6 +122,8 @@ vim.lsp.enable {
   "html",
   "neocmake",
   'kdl_lsp',
+  'nixd',
+  'tinymist',
 }
 
 ---@param count table<integer, integer>
