@@ -114,7 +114,7 @@ require "core.colorscheme".set_hl {
     delimiter = { fg = palette.sakiko },
     constructor = { fg = palette.sakiko },
     module = { fg = palette.taki, italic = true, },
-    path = { fg = palette.soyo, underline = true },
+    path = { fg = palette.soyo },
     concept = { fg = palette.anon },
     lifetime = { fg = palette.rana },
     component = { fg = palette.soyo },

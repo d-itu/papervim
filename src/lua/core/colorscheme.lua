@@ -136,6 +136,7 @@ local function set_hl(groups)
     Comment = groups.symbols.comment,
     ["@variable"] = { italic = true },
     ["@variable.member"] = groups.symbols.member,
+    ["@variable.parameter"] = groups.symbols.parameter,
     ["@lsp.type.parameter"] = groups.symbols.parameter,
 
     ["@variable.builtin"] = { bold = true },
@@ -177,6 +178,7 @@ local function set_hl(groups)
     ["@lsp.type.selfTypeKeyword"] = { bold = true },
     ["@lsp.typemod.selfKeyword"] = groups.symbols.self_type,
     ["@lsp.type.builtinAttribute"] = { bold = true },
+    ["@lsp.mod.defaultLibrary"] = { bold = true },
 
     ["@markup.quote"] = { fg = groups.fg.normal },
     ["@markup.link"] = {},

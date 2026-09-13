@@ -134,7 +134,7 @@ require "core.colorscheme".set_hl {
     delimiter = { fg = palette.grey },
     constructor = { fg = palette.lime },
     module = { fg = palette.lemon, italic = true, },
-    path = { fg = palette.lemon, underline = true },
+    path = { fg = palette.lemon },
     concept = { fg = palette.cherry },
     lifetime = { fg = palette.cherry, italic = true },
     component = { fg = palette.peach },
