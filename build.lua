@@ -49,9 +49,9 @@ local function post_update()
   vim.cmd.chdir(plugin_dir("blink.cmp"))
   os.execute [[
 test -e lib/libblink_cmp_fuzzy.so && exit 0
-cargo build --profile=native
+cargo build --profile=release
 mkdir -p lib
-cp target/native/libblink_cmp_fuzzy.so lib/libblink_cmp_fuzzy.so
+cp target/release/libblink_cmp_fuzzy.so lib/libblink_cmp_fuzzy.so
 ]]
 
   vim.system({ "cargo", "build", "--release" }, { cwd = plugin_dir("lua-format") }):wait()
