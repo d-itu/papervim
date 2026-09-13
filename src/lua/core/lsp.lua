@@ -156,26 +156,26 @@ end
 
 local group = require "core.augroup"
 
+---@param count integer
+local function jump(count)
+  vim.diagnostic.jump {
+    severity = max_severity(vim.diagnostic.count(0)),
+    count = count,
+  }
+end
+
+vim.keymap.set('n', ']d', function() jump(1) end, { desc = "Next Diagnostic" })
+vim.keymap.set('n', '[d', function() jump(-1) end, { desc = "Previous Diagnostic" })
+vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, { desc = "Show diagnostics under the cursor" })
+
+vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, { desc = "Rename" })
+vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, { desc = "Code Action" })
+vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, { desc = "Range Format" })
+vim.keymap.set('x', '<space>f', "gq", { desc = "Range Format" })
+
 vim.api.nvim_create_autocmd('LspAttach', {
   group = group,
   callback = function(args)
-    ---@param count integer
-    local function jump(count)
-      vim.diagnostic.jump {
-        severity = max_severity(vim.diagnostic.count(0)),
-        count = count,
-      }
-    end
-
-    vim.keymap.set('n', ']d', function() jump(1) end, { desc = "Next Diagnostic" })
-    vim.keymap.set('n', '[d', function() jump(-1) end, { desc = "Previous Diagnostic" })
-    vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, { desc = "Show diagnostics under the cursor" })
-
-    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, { desc = "Rename" })
-    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, { desc = "Code Action" })
-    vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, { desc = "Range Format" })
-    vim.keymap.set('x', '<space>f', "gq", { desc = "Range Format" })
-
     local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
 
     if client:supports_method('textDocument/foldingRange') then
