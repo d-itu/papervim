@@ -117,6 +117,7 @@ return function(args)
       pcall(vim.api.nvim_win_set_cursor, win, { item.line, item.col.start })
     end,
     on_choice = function(item)
+      clear_last_hl()
       if not item then return end
       vim.cmd.edit(item.path)
       pcall(vim.api.nvim_win_set_cursor, 0, { item.line, item.col.start })
