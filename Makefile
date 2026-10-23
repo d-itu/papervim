@@ -17,7 +17,7 @@ clean_orphans:
 	nvim -l build.lua generate_luarc
 
 .PHONY: compile
-compile: build/init.lua $(LUA_TARGETS)
+compile: $(LUA_TARGETS)
 
 build/%.lua: src/%.lua
 	@mkdir -p $(@D)

@@ -26,7 +26,7 @@ local palette = {
   day = '#d3e1f2',
 }
 
-local mix = require "core.ui.utils".mix_color
+local mix = require "papervim.ui.utils".mix_color
 
 local virtual_text = '#403c4d'
 
@@ -62,7 +62,7 @@ local fg = {
   border = non_text,
 }
 
-require "core.colorscheme".set_hl {
+require "papervim.colorscheme".set_hl {
   search = { bg = mix(bg.normal, palette.papaya, 0.32) },
   cur_search = { fg = bg.shadow, bg = mix(bg.normal, palette.papaya, 0.9) },
   substitute = { fg = bg.shadow, bg = mix(bg.normal, palette.grapefruit, 0.9) },

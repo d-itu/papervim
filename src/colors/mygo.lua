@@ -23,7 +23,7 @@ local palette = {
   ave_mujica = 0x881144,
 }
 
-local mix = require "core.ui.utils".mix
+local mix = require "papervim.ui.utils".mix
 
 local grey = {
   dark = {
@@ -43,7 +43,7 @@ local grey = {
 
 local inactive = mix(grey.dark[4], grey.light[2], 0.78)
 
-require "core.colorscheme".set_hl {
+require "papervim.colorscheme".set_hl {
   search = { fg = grey.light[1], bg = palette.uika },
   cur_search = { fg = grey.dark[1], bg = palette.soyo },
   substitute = { fg = palette.anon, bg = palette.nyamu },
